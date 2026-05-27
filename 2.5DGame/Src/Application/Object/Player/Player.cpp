@@ -27,6 +27,8 @@ void Player::Update()
 
 }
 
+
+
 void Player::Move()
 {	
 	m_moveVec.x = 0;
