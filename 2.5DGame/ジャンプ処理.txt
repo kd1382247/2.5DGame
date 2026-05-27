@@ -1,0 +1,37 @@
+//==========ジャンプ==========//
+if (GetAsyncKeyState(VK_SPACE) & 0x8000)
+{
+	if(!m_AttackFlg)
+	{
+		if (!m_jumpFlg)
+		{
+			m_jumpVec = 0.2f;
+			m_jumpFlg = true;
+			e_playerState = PlayerState::JUMP;
+			m_animCnt = 0;
+		}
+	}
+}
+
+m_jumpVec -= gravity;
+
+m_jumpPos += m_jumpVec;
+
+// 仮地面判定
+if (m_jumpPos <= 1)
+{
+	m_jumpPos = 1;
+	m_jumpVec = 0;
+	m_jumpFlg = false;
+}
+////////////////////////////////
+
+
+ 変数
+
+// ジャンプ系
+float         m_jumpVec = {};
+float         m_jumpPos = {};
+const float   gravity = 0.01f;
+// ジャンプフラグ
+bool          m_jumpFlg = {};
