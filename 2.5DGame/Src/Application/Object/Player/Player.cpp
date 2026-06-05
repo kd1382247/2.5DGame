@@ -1,100 +1,116 @@
 ﻿#include "Player.h"
 
+#include"../../Scene/SceneManager.h"
 #include"../../Mouse/Mouse.h"
 
 void Player::Init()
 {
+
+	// デバッグ用 : KdGameObjectにポインタを用意しているので実体化
+	m_pDebugWire = std::make_unique<KdDebugWireFrame>();
+
 	m_polygon = std::make_shared<KdSquarePolygon>();
 	m_polygon->SetMaterial("Asset/Textures/Player/player.png");
 
-	m_polygon->SetSplit(12, 9);
+
+	m_polygon->SetSplit(12, 8);
+
 	m_polygon->SetScale(3.0f);
 
-	m_pos = { 0,1,0 };
+	m_polygon->SetPivot(KdSquarePolygon::PivotType::Center_Bottom);
+
+	m_pos = {-10,0,0,};
+	m_scaleX = {};
+
+	// 重力
+	m_gravity = 0.0f;
+
+	m_transMat = Math::Matrix::Identity;
+	m_scaleMat = Math::Matrix::Identity;
+	m_mWorld = Math::Matrix::Identity;
+
+
+}
+
+void Player::GenerateDepthMapFromLight()
+{
+	KdShaderManager::Instance().m_StandardShader.DrawPolygon(*m_polygon, m_mWorld);
+}
+
+void Player::DrawLit()
+{
+	KdShaderManager::Instance().m_StandardShader.DrawPolygon(*m_polygon, m_mWorld);
 }
 
 void Player::DrawUnLit()
 {
-	KdShaderManager::Instance().m_StandardShader.DrawPolygon(*m_polygon, m_mWorld);
+
 }
 
 void Player::Update()
 {
 	Move();
-	Animation();
 	Attack();
+	UpdatePlayerState();
 	FlipCharacter();
+}
+
+void Player::PostUpdate()
+{
+	
+
+	// 行列作成
+	m_transMat = Math::Matrix::CreateTranslation(m_pos);
+	m_scaleMat = Math::Matrix::CreateScale(m_scaleX, 1.0f, 1.0f);
+	m_mWorld =m_scaleMat * m_transMat;
+
+
+	RayCollition(m_pos, 0, 0.2f,KdCollider::TypeGround);
+	SphereCollition(m_pos, 0.8, 0.6, KdCollider::TypeGround);
+}
+
+void Player::Release()
+{
 
 }
 
-
-
 void Player::Move()
 {	
-	m_moveVec.x = 0;
-	m_moveVec.z = 0;
-	m_moveVec.y = 0;
+	m_moveVec = Math::Vector3::Zero;
 
+	// 攻撃していなかったら
 	if(!m_attackFlg)
 	{
-		if (GetAsyncKeyState('A') & 0x8000)
-		{
-			m_moveVec.x = -1.0f;
 
-			e_playerState = PlayerState::RUN;
+		if (GetAsyncKeyState('W') & 0x8000)m_moveVec.z = 1.0f;
+		if (GetAsyncKeyState('S') & 0x8000)m_moveVec.z = -1.0f;
+		if (GetAsyncKeyState('A') & 0x8000)m_moveVec.x = -1.0f;
+		if (GetAsyncKeyState('D') & 0x8000)m_moveVec.x = 1.0f;
 
-		}
-
-		if (GetAsyncKeyState('D') & 0x8000)
-		{
-			m_moveVec.x = 1.0f;
-
-			e_playerState = PlayerState::RUN;
-
-		}
-	
-
-		if (GetAsyncKeyState('W') & 0x8000)
-		{
-			m_moveVec.z = 1.0f;
-
-			e_playerState = PlayerState::RUN;
-
-		}
-		
-
-		if (GetAsyncKeyState('S') & 0x8000)
-		{
-			m_moveVec.z = -1.0f;
-
-			e_playerState = PlayerState::RUN;
-
-		}
-		
-	}
-
-	if(!m_attackFlg)
-	{
-		// もしどの移動キーも押されていなければ
+		// 移動量が0だったら待機モーション
 		if(m_moveVec==Math::Vector3::Zero)
 		{
 			e_playerState = PlayerState::IDLE;
+			
+			m_runAnimCnt = 0;
+		}
+		// 移動量が0以外だったら走るモーション
+		else
+		{
+			e_playerState = PlayerState::RUN;
+
+			m_idleAnimCnt = 0;
 		}
 	}
-
 
 	// 正規化
 	m_moveVec.Normalize();
 
-
 	m_pos += m_moveVec * moveSpd;
 
+	m_pos.y -= m_gravity;
+	m_gravity += 0.01;
 
-	Math::Matrix transMat = Math::Matrix::CreateTranslation(m_pos);
-
-	Math::Matrix scaleMat = Math::Matrix::CreateScale(m_scaleX, 1.0f, 1.0f);
-
-	m_mWorld = scaleMat * transMat;
 }
 
 void Player::Attack()
@@ -105,13 +121,12 @@ void Player::Attack()
 		{
 			m_attackFlg = true;
 
-			m_InputWindowFrame = 0;
+			m_inputWindowFrame = 0;
 			m_inputWindowFlg = false;
 
 			if(m_attackPattern==(int)PlayerState::ATTACK1)
 			{
 				e_playerState = PlayerState::ATTACK1;
-
 			}
 			if (m_attackPattern == (int)PlayerState::ATTACK2)
 			{
@@ -121,52 +136,53 @@ void Player::Attack()
 			{
 				e_playerState = PlayerState::ATTACK3;
 			}
-
-			m_moveAnimCnt = 0;
 		}
 	}
 
+	// 3段攻撃モーションの受付フラグ
 	if(m_inputWindowFlg)
 	{
-		m_InputWindowFrame++;
-		if (m_InputWindowFrame > 60 * 0.2)
+		// 受付時間カウントアップ
+		m_inputWindowFrame++;
+
+		// 一定の時間で受付終了
+		if (m_inputWindowFrame > 60 * 0.2)
 		{
+			// 1段目の攻撃に戻る
 			m_attackPattern = 0;
 			m_inputWindowFlg = false;
 		}
 	}
 }
 
-void Player::Animation()
+void Player::UpdatePlayerState()
 {
 
 	switch (e_playerState)
 	{
-
-
 	case PlayerState::ATTACK1:
 		
-		m_polygon->SetUVRect(m_attack1[(int)AttackAnim(0.25, 4)]);
+		m_polygon->SetUVRect(m_attack1[(int)PlayAnim(0.25, 4)]);
 
 		break;
 	case PlayerState::ATTACK2:
 
-		m_polygon->SetUVRect(m_attack2[(int)AttackAnim(0.2, 3)]);
+		m_polygon->SetUVRect(m_attack2[(int)PlayAnim(0.2, 3)]);
 
 		break;
 	case PlayerState::ATTACK3:
 
-		m_polygon->SetUVRect(m_attack3[(int)AttackAnim(0.25, 5)]);
+		m_polygon->SetUVRect(m_attack3[(int)PlayAnim(0.25, 5)]);
 
 		break;
 	case PlayerState::IDLE:
 
-		m_polygon->SetUVRect(m_idle[(int)PlayAnim(0.15,6)]);
+		m_polygon->SetUVRect(m_idle[(int)PlayAnim(0.15,6,m_idleAnimCnt)]);
 
 		break;
 	case PlayerState::RUN:
 
-		m_polygon->SetUVRect(m_run[(int)PlayAnim(0.2, 6)]);
+		m_polygon->SetUVRect(m_run[(int)PlayAnim(0.2, 6,m_runAnimCnt)]);
 
 
 		break;
@@ -185,40 +201,156 @@ void Player::Animation()
 	}
 }
 
-float Player::PlayAnim(float cntUp,int maxAnim)
+void Player::RayCollition(Math::Vector3& m_pos, float upPosY, float enableStepHigh,KdCollider::Type type)
 {
-	
-	if (m_moveAnimCnt >maxAnim)
+	// 当てる側
+		// ==================
+		// レイ(光線)判定
+		//===================
+	KdCollider::RayInfo ray;
+	// レイの発射位置を設定
+	ray.m_pos = m_pos;
+	// ちょっと上からの位置にする
+	ray.m_pos.y += upPosY;
+	// 段差の許容用範囲
+	ray.m_pos.y += enableStepHigh;
+	// レイの発射方向を設定
+	ray.m_dir = { 0,-1,0 };
+	// レイの長さを設定
+	ray.m_range = m_gravity + enableStepHigh;
+	// 当たり判定を行いたいタイプを設定
+	ray.m_type =type;
+
+	// デバッグ
+	m_pDebugWire->AddDebugLine(ray.m_pos, ray.m_dir, ray.m_range);
+
+	// レイに当たったオブジェクト情報を格納するリスト
+	std::list<KdCollider::CollisionResult>retRayList;
+	// 当たり判定
+	for (auto& obj : SceneManager::Instance().GetObjList())
 	{
-		m_moveAnimCnt = 0;
+		// 全オブジェクトに対してレイ判定する関数を呼び出す
+		obj->Intersects(ray, &retRayList);
+	}
+
+	// レイリストから一番近いオブジェクトを探す
+	float         maxOverlap = 0;
+	Math::Vector3 hitPos;
+	bool          hit = false;
+
+	for (auto& ret : retRayList)
+	{
+		// レイを遮断しオーバー下長さが一番長いものを探す
+		if (maxOverlap < ret.m_overlapDistance)
+		{
+			// 更新
+			maxOverlap = ret.m_overlapDistance;
+			hitPos = ret.m_hitPos;
+			hit = true;
+		}
+	}
+	if (hit == true)
+	{
+		// 当たっていたらその座標をプレイヤー座標にセット
+		m_pos = hitPos + Math::Vector3(0, 0, 0);
+
+		m_gravity = 0;
+	}
+}
+
+void Player::SphereCollition(Math::Vector3& m_pos, float centerY, float radius, KdCollider::Type type)
+{
+	// ==================
+	// 球(スフィア)判定
+	//===================
+	// 球判定用の変数を用意
+	KdCollider::SphereInfo sphere;
+	// 球の中心座標を設定
+	sphere.m_sphere.Center = m_pos;
+	sphere.m_sphere.Center.y += centerY;
+	// 球の半径を設定
+	sphere.m_sphere.Radius = radius;
+	// 当たり判定をしたいタイプを設定
+	sphere.m_type = type;
+
+	// デバッグ
+	m_pDebugWire->AddDebugSphere(sphere.m_sphere.Center, sphere.m_sphere.Radius);
+
+	// 球に当たったオブジェクト情報を格納するリスト
+	std::list<KdCollider::CollisionResult>retSphereList;
+	// 全部ジェクトと当たり判定をする!
+	for (auto& obj : SceneManager::Instance().GetObjList())
+	{
+		// 全オブジェクトに対してレイ判定する関数を呼び出す
+		obj->Intersects(sphere, &retSphereList);
+	}
+
+	// 球に当たったリストから一番近いオブジェクトを探す
+	float maxOverlap = 0;
+	bool hit = false;
+	Math::Vector3 hitDir;  // 当たった方向
+
+	for (auto& ret : retSphereList)
+	{
+		// 球にめり込んだ長さが一番長いものを探す
+		if (maxOverlap < ret.m_overlapDistance)
+		{
+			// 更新
+			maxOverlap = ret.m_overlapDistance;
+			hitDir = ret.m_hitDir;
+			hit = true;
+		}
+	}
+
+	if (hit == true)
+	{
+		// ※方向ベクトルは絶対長さ１
+		// 正規化 (長さが1)
+		hitDir.Normalize();
+
+		// 押し戻し処理
+		m_pos += hitDir * maxOverlap;
+	}
+}
+
+float Player::PlayAnim(float cntUp,int maxAnim,float& animCnt)
+{
+
+	if (animCnt >maxAnim)
+	{
+		animCnt = 0;
 		if(e_playerState!=PlayerState::IDLE)
 		{
 			e_playerState = PlayerState::IDLE;
 		}
 	}
 
-	m_moveAnimCnt += cntUp;
+	animCnt += cntUp;
 
-	return m_moveAnimCnt;
+	return animCnt;
 	
 }
 
-float Player::AttackAnim(float cntUp, int maxAnim)
+float Player::PlayAnim(float cntUp, int maxAnim)
 {
 	if (m_attackAnimCnt > maxAnim)
 	{
 		m_attackAnimCnt = 0;
+		m_attackFlg = false;
 
+		// 攻撃パターンのカウントアップ
 		m_attackPattern++;
+
+		// ３段攻撃までしたら、リセット
 		if (m_attackPattern >= 3)
 		{
 			m_attackPattern = 0;
 		}
 
+		// 入力受付フラグをture
 		m_inputWindowFlg = true;
 
-		m_attackFlg = false;
-
+		// 攻撃が終われば待機モーション
 		e_playerState = PlayerState::IDLE;
 	}
 
@@ -229,6 +361,7 @@ float Player::AttackAnim(float cntUp, int maxAnim)
 
 void Player::FlipCharacter()
 {
+	// マウスのX座標にキャラの向きを合わせる
 
 	if(!m_attackFlg)
 	{

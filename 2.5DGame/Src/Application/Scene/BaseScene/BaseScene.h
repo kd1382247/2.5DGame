@@ -16,6 +16,8 @@ public :
 	void DrawSprite();
 	void DrawDebug();
 
+
+
 	// オブジェクトリストを取得
 	const std::list<std::shared_ptr<KdGameObject>>& GetObjList()
 	{
@@ -28,6 +30,7 @@ public :
 		m_objList.push_back(_obj);
 	}
 
+
 protected :
 
 	// 継承先シーンで必要ならオーバーライドする
@@ -35,6 +38,10 @@ protected :
 	virtual void Init();
 
 	std::unique_ptr<KdCamera> m_camera = nullptr;
+
+	// 画面サイズ
+	static const int ScrWidth = 1280;
+	static const int ScrHeight = 720;
 
 	// 全オブジェクトのアドレスをリストで管理
 	std::list<std::shared_ptr<KdGameObject>> m_objList;

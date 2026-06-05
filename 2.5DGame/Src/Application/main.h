@@ -23,18 +23,9 @@ public:
 	float	GetDeltaTime()		const	{ return m_fpsController.GetDeltaTime(); }
 
 
-	void SetPos(Math::Vector3 a_pos) { m_pos = a_pos; }
-
-	Math::Vector3 GetPos() { return m_pos; }
-
-	void SetMouse(POINT a_mouse) { m_mouse= a_mouse; }
-
-	POINT GetMouse() { return m_mouse; }
 
 private:
 
-	Math::Vector3 m_pos = Math::Vector3::Zero;
-	POINT         m_mouse = {};
 
 	void KdBeginUpdate();
 	void PreUpdate();

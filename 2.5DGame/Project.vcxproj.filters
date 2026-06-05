@@ -88,6 +88,33 @@
     <Filter Include="Src\Application\Mouse">
       <UniqueIdentifier>{7c190bbb-9160-468a-9cfe-0d38ff02ce4e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\Object\Enemy">
+      <UniqueIdentifier>{390d180e-950e-4e5d-ba38-95b43183e7d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\AttackArc">
+      <UniqueIdentifier>{09614471-36e9-42f4-a326-279fdd2af16e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\Object\Enemy\Mushroom">
+      <UniqueIdentifier>{696cb48e-cf01-45b8-84eb-be7077dcbc14}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\Object\Enemy\Skeleton">
+      <UniqueIdentifier>{3610e387-3ee0-461e-b291-6b0d0bc345a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\Object\Enemy\Goblin">
+      <UniqueIdentifier>{84d694e5-a007-4b9d-88a5-7dc198c9a861}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\Object\Enemy\FlyngEye">
+      <UniqueIdentifier>{23b35169-c2eb-4fda-a768-f920c9da1bcb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\Object\Wall">
+      <UniqueIdentifier>{8b836d5d-0052-4b9f-9af9-8af3ac853dc7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\Object\Tree">
+      <UniqueIdentifier>{1df0a828-e970-4202-8546-877d0da5c6c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\Object\Enemy\MoveArc">
+      <UniqueIdentifier>{d5294e54-b7fc-4bff-ad2a-ed8e7cad32e3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -273,6 +300,33 @@
     <ClInclude Include="Src\Application\Mouse\Mouse.h">
       <Filter>Src\Application\Mouse</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\Object\Enemy\BaseEnemy.h">
+      <Filter>Src\Application\Object\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\AttackArc\AttackArc.h">
+      <Filter>Src\Application\AttackArc</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Object\Enemy\Mushroom\Mushroom.h">
+      <Filter>Src\Application\Object\Enemy\Mushroom</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Object\Enemy\Goblin\Goblin.h">
+      <Filter>Src\Application\Object\Enemy\Goblin</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Object\Enemy\Skeleton\Skeleton.h">
+      <Filter>Src\Application\Object\Enemy\Skeleton</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Object\Enemy\FlyngEye\FlyngEye.h">
+      <Filter>Src\Application\Object\Enemy\FlyngEye</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Object\Wall\Wall.h">
+      <Filter>Src\Application\Object\Wall</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Object\Tree\Tree.h">
+      <Filter>Src\Application\Object\Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Object\Enemy\MoveArc\MoveArc.h">
+      <Filter>Src\Application\Object\Enemy\MoveArc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -427,6 +481,33 @@
     </ClCompile>
     <ClCompile Include="Src\Application\Mouse\Mouse.cpp">
       <Filter>Src\Application\Mouse</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Object\Enemy\BaseEnemy.cpp">
+      <Filter>Src\Application\Object\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\AttackArc\AttackArc.cpp">
+      <Filter>Src\Application\AttackArc</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Object\Enemy\Mushroom\Mushroom.cpp">
+      <Filter>Src\Application\Object\Enemy\Mushroom</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Object\Enemy\Goblin\Goblin.cpp">
+      <Filter>Src\Application\Object\Enemy\Goblin</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Object\Enemy\Skeleton\Skeleton.cpp">
+      <Filter>Src\Application\Object\Enemy\Skeleton</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Object\Enemy\FlyngEye\FlyngEye.cpp">
+      <Filter>Src\Application\Object\Enemy\FlyngEye</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Object\Wall\Wall.cpp">
+      <Filter>Src\Application\Object\Wall</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Object\Tree\Tree.cpp">
+      <Filter>Src\Application\Object\Tree</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Object\Enemy\MoveArc\MoveArc.cpp">
+      <Filter>Src\Application\Object\Enemy\MoveArc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

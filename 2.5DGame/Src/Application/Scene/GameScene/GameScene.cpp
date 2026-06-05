@@ -5,9 +5,18 @@
 
 #include"../../main.h"
 
+#include"../../AttackArc/AttackArc.h"
+
 #include"../../Object/Ground/Ground.h"
+#include"../../Object/Wall/Wall.h"
+#include"../../Object/Tree/Tree.h"
+
 #include"../../Object/Player/Player.h"
 
+#include"../../Object/Enemy/Mushroom/Mushroom.h"
+#include"../../Object/Enemy/Goblin/Goblin.h"
+#include"../../Object/Enemy/Skeleton/Skeleton.h"
+#include"../../Object/Enemy/FlyngEye/FlyngEye.h"
 
 
 void GameScene::Event()
@@ -22,19 +31,28 @@ void GameScene::Event()
 		);
 	}
 
-	
+	Math::Vector3 playerPos = {};
+	if (m_wpPlayer.expired() == false)
+	{
+		std::shared_ptr<Player>spPlayer = m_wpPlayer.lock();
+
+		playerPos = spPlayer->GetPos();
+	}
+
+
 	// カメラ更新
-	Math::Vector3 camPos = { 0,5,-10 };
+	Math::Vector3 camPos = { 0,8,-8 };
+	//Math::Vector3 camPos = { 0,2,-6 };
 
-	Math::Matrix  rotationMat = Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(20));
+	Math::Matrix  rotationMat = Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(40));
+	//Math::Matrix  rotationMat = Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(0));
 
-	Math::Matrix  transMat = Math::Matrix::CreateTranslation(camPos+m_player->GetPos());
+	Math::Matrix  transMat = Math::Matrix::CreateTranslation(camPos+playerPos);
 
 
 	Math::Matrix  camWolrd = rotationMat * transMat;
 
 	m_camera->SetCameraMatrix(camWolrd);
-
 
 
 	// 画面上のマウス座標を取得
@@ -54,22 +72,49 @@ void GameScene::Init()
 	m_camera = std::make_unique <KdCamera>();
 
 
-	// ●オブジェクト追加
-	// ①ポインタを用意
 	std::shared_ptr<Ground>ground;
-
-	// ②実体化
 	ground = std::make_shared<Ground>();
-	// ③初期化
-	// ※黒崎教はコンストラクタでInitを呼ぶので不要
-	// ④オブジェクトリストに追加
 	m_objList.push_back(ground);
 
-
+	std::shared_ptr<Wall>wall;
+	wall = std::make_shared<Wall>();
+	m_objList.push_back(wall);
 	
-	m_player = std::make_shared<Player>();
-	m_objList.push_back(m_player);
+	std::shared_ptr<Player>player;
+	player = std::make_shared<Player>();
+	m_objList.push_back(player);
 
+	std::shared_ptr<AttackArc>attackArc;
+	attackArc = std::make_shared<AttackArc>();
+	attackArc->SetPlayerInst(player);
+	m_objList.push_back(attackArc);
+
+	std::shared_ptr<Mushroom>mushroom;
+	mushroom = std::make_shared<Mushroom>();
+	mushroom->SetPlayerInst(player);
+	m_objList.push_back(mushroom);
+
+	std::shared_ptr<Goblin>goblin;
+	goblin = std::make_shared<Goblin>();
+	goblin->SetPlayerInst(player);
+	m_objList.push_back(goblin);
+
+	std::shared_ptr<FlyingEye>flyingEye;
+	flyingEye = std::make_shared<FlyingEye>();
+	flyingEye->SetPlayerInst(player);
+	m_objList.push_back(flyingEye);
+
+	std::shared_ptr<Skeleton>skeleton;
+	skeleton = std::make_shared<Skeleton>();
+	skeleton->SetPlayerInst(player);
+	m_objList.push_back(skeleton);
+
+	std::shared_ptr<Tree>tree;
+	tree = std::make_shared<Tree>();
+	m_objList.push_back(tree);
+
+	m_wpPlayer = player;
+	
 }
 
 
@@ -81,8 +126,11 @@ void GameScene::Get2DMousePos()
 	//指定のウィンドウ基準のマウス座標に変換(実行画面の左上(0,0))
 	ScreenToClient(Application::Instance().GetWindowHandle(), &m_mouse2D);
 
-	Mouse::Instance().Set2DMousePos(m_mouse2D);
+	m_mouse2D.x -= ScrWidth / 2;
+	m_mouse2D.y -= ScrHeight / 2;
+	m_mouse2D.y *= -1;
 
+	Mouse::Instance().Set2DMousePos(m_mouse2D);
 }
 
 void GameScene::GetMouseWorldPosition()

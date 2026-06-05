@@ -54,15 +54,12 @@ void KdDebugGUI::GuiProcess()
 	//===========================================================
 
 	// デバッグウィンドウ(日本語を表示したい場合はこう書く)
-	if (ImGui::Begin(U8("えふぴぃえす")))
-	{
-	// FPS
-		ImGui::Text("FPS : %d", Application::Instance().GetNowFPS());
-		ImGui::Text("pos.x : %f", Application::Instance().GetPos().x);
-		ImGui::Text("mouse.x : %f",Mouse::Instance().Get3DMousePos().x );
-
-	}
-	ImGui::End();
+	//if (ImGui::Begin(U8("えふぴぃえす")))
+	//{
+	//// FPS
+	//	ImGui::Text("FPS : %d", Application::Instance().GetNowFPS());
+	//}
+	//ImGui::End();
 
 	// ログウィンドウ
 	m_uqLog->Draw("Log Window");
@@ -70,8 +67,7 @@ void KdDebugGUI::GuiProcess()
 	//=====================================================
 	// ログ出力 ・・・ AddLog("～") で追加
 	//=====================================================
-
-//	m_uqLog->AddLog("hello world\n");
+    //m_uqLog->AddLog("hello world\n");
 
 	//=====================================================
 	// 別ソースファイルからログを出力する場合

@@ -1,16 +1,22 @@
 ﻿#pragma once
 
+
 class Player :public KdGameObject
 {
 public:
 
 	Player() { Init(); }
-	~Player(){}
+	~Player()override{}
 
 
-	void Init()   override;
-	void DrawUnLit()override;
-	void Update() override;
+	void Init()                     override;
+
+	void GenerateDepthMapFromLight()override;
+	void DrawLit()                  override;
+	void DrawUnLit()                override;
+
+	void Update()                   override;
+	void PostUpdate()               override;
 	
 
 private:
@@ -28,41 +34,57 @@ private:
 	};
 
 
+	void Release();
+
 	void Move();
 	void Attack();
-	void Animation();
+	void UpdatePlayerState();
+
+	void RayCollition(Math::Vector3 &m_pos,float upPosY, float enableStepHigh,KdCollider::Type type);
+	void SphereCollition(Math::Vector3 &m_pos,float centerY,float radius,KdCollider::Type type);
+
+
+	float PlayAnim(float cntUp,int maxAnim,float & animCnt);
 	float PlayAnim(float cntUp,int maxAnim);
-	float AttackAnim(float cntUp,int maxAnim);
 
 	void FlipCharacter();
 
 
-	std::shared_ptr<KdSquarePolygon>m_polygon;
+	std::shared_ptr<KdSquarePolygon>m_polygon=nullptr;
+
+
+	// 行列系
+	Math::Matrix m_transMat=Math::Matrix::Identity;
+	Math::Matrix m_scaleMat=Math::Matrix::Identity;
 
 	// キャラの方向
-	float m_scaleX=1;
+	float m_scaleX = {};
+
+	// 重力
+	float m_gravity = {};
 
 	// 移動系
 	Math::Vector3 m_pos = Math::Vector3::Zero;
 	Math::Vector3 m_moveVec = {};
-	const float   moveSpd = 0.1f;
-	bool          m_moveFlg[4] = {};
+	const float   moveSpd = 0.15f;
 
 	// 攻撃系
 	bool          m_attackFlg = {};
 	int           m_attackPattern = {};
-	float         m_InputWindowFrame = {};
+	float         m_inputWindowFrame = {};
 	bool          m_inputWindowFlg = {};
 
 
 	// アニメーション系
 	PlayerState   e_playerState = PlayerState::IDLE;
-	float         m_moveAnimCnt = {};
+
+	float         m_runAnimCnt = {};
+	float         m_idleAnimCnt = {};
 	float         m_attackAnimCnt = {};
 
 	// 各アニメーションの番号
 	// 攻撃１
-	int           m_attack1[5]= { 2,3,4,5,6 };
+	int           m_attack1[5]= { 1,2,3,4,5 };
 	// 攻撃2
 	int           m_attack2[4] = { 12,13,14,15 };
 	// 攻撃3
