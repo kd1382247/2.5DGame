@@ -6,6 +6,7 @@
 #include"../../main.h"
 
 #include"../../AttackArc/AttackArc.h"
+#include"../../Object/Enemy/MoveArc/MoveArc.h"
 
 #include"../../Object/Ground/Ground.h"
 #include"../../Object/Wall/Wall.h"
@@ -89,25 +90,61 @@ void GameScene::Init()
 	attackArc->SetPlayerInst(player);
 	m_objList.push_back(attackArc);
 
+
 	std::shared_ptr<Mushroom>mushroom;
 	mushroom = std::make_shared<Mushroom>();
 	mushroom->SetPlayerInst(player);
 	m_objList.push_back(mushroom);
+
+	{
+		std::shared_ptr<MoveArc>moveArc = std::make_shared<MoveArc>();
+		moveArc->SetPlayerInst(player);
+		moveArc->SetEnemyInst(mushroom);
+		moveArc->SetPos({ 0,0.8,-0.2 });
+		m_objList.push_back(moveArc);
+	}
+
+
 
 	std::shared_ptr<Goblin>goblin;
 	goblin = std::make_shared<Goblin>();
 	goblin->SetPlayerInst(player);
 	m_objList.push_back(goblin);
 
+	{
+		std::shared_ptr<MoveArc>moveArc = std::make_shared<MoveArc>();
+		moveArc->SetPlayerInst(player);
+		moveArc->SetEnemyInst(goblin);
+		moveArc->SetPos({ 0,0.8,-0.2 });
+		m_objList.push_back(moveArc);
+	}
+
+
 	std::shared_ptr<FlyingEye>flyingEye;
 	flyingEye = std::make_shared<FlyingEye>();
 	flyingEye->SetPlayerInst(player);
 	m_objList.push_back(flyingEye);
 
+	{
+		std::shared_ptr<MoveArc>moveArc = std::make_shared<MoveArc>();
+		moveArc->SetPlayerInst(player);
+		moveArc->SetEnemyInst(flyingEye);
+		moveArc->SetPos({ 0,0.8,-0.2 });
+		m_objList.push_back(moveArc);
+	}
+
 	std::shared_ptr<Skeleton>skeleton;
 	skeleton = std::make_shared<Skeleton>();
 	skeleton->SetPlayerInst(player);
 	m_objList.push_back(skeleton);
+
+	{
+		std::shared_ptr<MoveArc>moveArc = std::make_shared<MoveArc>();
+		moveArc->SetPlayerInst(player);
+		moveArc->SetEnemyInst(skeleton);
+		moveArc->SetPos({ 0,0.8,-0.2 });
+		m_objList.push_back(moveArc);
+	}
 
 	std::shared_ptr<Tree>tree;
 	tree = std::make_shared<Tree>();

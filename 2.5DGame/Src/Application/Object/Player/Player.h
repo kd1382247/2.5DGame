@@ -18,6 +18,11 @@ public:
 	void Update()                   override;
 	void PostUpdate()               override;
 	
+	//=================================
+	// クラス外使用の関数
+	//=================================
+
+	float GetRadius() { return m_radius; }
 
 private:
 
@@ -67,6 +72,9 @@ private:
 	Math::Vector3 m_pos = Math::Vector3::Zero;
 	Math::Vector3 m_moveVec = {};
 	const float   moveSpd = 0.15f;
+
+	// 半径
+	float         m_radius = {};
 
 	// 攻撃系
 	bool          m_attackFlg = {};

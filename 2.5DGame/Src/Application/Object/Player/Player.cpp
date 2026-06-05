@@ -22,6 +22,9 @@ void Player::Init()
 	m_pos = {-10,0,0,};
 	m_scaleX = {};
 
+	// 半径
+	m_radius = 1;
+
 	// 重力
 	m_gravity = 0.0f;
 

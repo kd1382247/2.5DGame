@@ -1,8 +1,6 @@
 ﻿#pragma once
 #include"../../Enemy/BaseEnemy.h"
 
-class MoveArc;
-
 class Skeleton :public BaseEnemy
 {
 public:
@@ -11,9 +9,6 @@ public:
 	~Skeleton()override {}
 
 	void Init()      override;
-
-	void DrawUnLit() override;
-
 	void Update()    override;
 	void PostUpdate()override;
 
@@ -21,9 +16,6 @@ public:
 private:
 
 	void Release();
-
-	void Move();
-	void Attack();
 	void UpdateEnemyState();
 
 
@@ -35,6 +27,5 @@ private:
 	int m_death[4] = {24,25,26,27};
 	int m_attack[5] = {35,36,37,38,39};
 
-	std::shared_ptr<MoveArc>m_spMoveArc=nullptr;
 
 };

@@ -12,9 +12,14 @@ void BaseEnemy::Init()
 	// 移動関連
 	m_pos = m_mWorld.Translation();
 	m_moveVec = {};
-	m_speed = 0.1f;
+	m_speed = 0.05f;
 	m_scale = 1;
 
+	// 攻撃フラグ
+	m_attackFlg = {};
+
+	// 半径
+	m_radius = {};
 	// 重力
 	m_gravity = {};
 
@@ -29,6 +34,9 @@ void BaseEnemy::Init()
 	m_hitAnimCnt = {};
 	m_deathAnimCnt = {};
 
+	// プレイヤー座標初期化
+	m_playerPos = {};
+	m_playerRadius = {};
 
 	// 行列初期化(単位行列)
 	m_scaleMat = Math::Matrix::Identity;
@@ -63,11 +71,17 @@ void BaseEnemy::Release()
 	m_polygon = nullptr;
 }
 
-float BaseEnemy::PlayAnim(float cntUp, int maxAnim, float& animCnt,EnemyState &enemyState)
+float BaseEnemy::PlayAnim(float cntUp, int maxAnim, float& animCnt,EnemyState &enemyState,bool&attackFlg)
 {
 	if (animCnt > maxAnim)
 	{
 		animCnt = 0;
+
+		if (enemyState == EnemyState::ATTACK)
+		{
+			attackFlg = false;
+		}
+
 		if (enemyState != EnemyState::IDLE)
 		{
 			enemyState = EnemyState::IDLE;
@@ -79,7 +93,7 @@ float BaseEnemy::PlayAnim(float cntUp, int maxAnim, float& animCnt,EnemyState &e
 	return animCnt;
 }
 
-void BaseEnemy::Move(Math::Vector3 plPos,Math::Vector3 &enemyPos,float speed)
+void BaseEnemy::Move(Math::Vector3 plPos, Math::Vector3& enemyPos, float speed)
 {
 	Math::Vector3 move = plPos - enemyPos;
 	move.Normalize();
@@ -91,11 +105,22 @@ void BaseEnemy::FlipEnemy(Math::Vector3 playerPos, Math::Vector3 enemyPos, float
 {
 	if (enemyPos.x > playerPos.x)
 	{
-		m_scale = -1;
+		scale = -1;
 	}
 	if (enemyPos.x < playerPos.x)
 	{
-		m_scale = 1;
+		scale = 1;
+	}
+}
+
+void BaseEnemy::Attack(Math::Vector3 enemyPos, Math::Vector3 playerPos, float enemyRadius, float playerRadius, EnemyState& enemyState, bool& m_attackFlg)
+{
+	Math::Vector3 pos = playerPos - enemyPos;
+
+	if (pos.Length() < enemyRadius + playerRadius)
+	{
+		m_attackFlg = true;
+		enemyState = EnemyState::ATTACK;
 	}
 }
 
