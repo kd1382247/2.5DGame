@@ -17,13 +17,29 @@ void Skeleton::Init()
 
 	m_pos = { 5,0,0 };
 
-	m_radius = 1;
+	m_radius = 0.5f;
+
+	m_model = std::make_shared<KdModelData>();
+	m_model->Load("Asset/Models/Enemy/Enemy.gltf");
+
+
+	// 当たり判定を付けたいから実体化
+	m_pCollider = std::make_unique<KdCollider>();
+
+	// モデルの形状で当たり判定を登録
+	m_pCollider->RegisterCollisionShape(
+		"PlayerCollision",
+		m_model,
+		KdCollider::Type::TypeBump);
+
+	//=======================================
+
 }
 
 void Skeleton::Update()
 {
 
-	UpdateEnemyState();
+	
 
 	m_playerPos = {};
 	if (m_wpPlayer.expired() == false)
@@ -37,10 +53,11 @@ void Skeleton::Update()
 	{
 		//Move(m_playerPos, m_pos, m_speed);
 
-		FlipEnemy(m_playerPos, m_pos, m_scale);
+		FlipEnemy(m_playerPos, m_pos);
 	}
 
-	Attack(m_pos, m_playerPos, m_radius, m_playerRadius, m_eEnemyState, m_attackFlg);
+	Attack(m_pos, m_playerPos, m_radius, m_playerRadius);
+	UpdateEnemyState();
 
 }
 
@@ -50,6 +67,9 @@ void Skeleton::PostUpdate()
 	// レイ判定(地面)
 	RayCollition(m_pos, m_gravity, 0, 0.2, KdCollider::TypeGround);
 
+	SphereCollition(m_pos, 1, 0.8, KdCollider::TypeBump);
+	SphereCollition(m_pos, 1, 0.8, KdCollider::TypeGround);
+
 	m_transMat = Math::Matrix::CreateTranslation(m_pos);
 	m_scaleMat = Math::Matrix::CreateScale({ m_scale,1.0f,1.0f });
 
@@ -58,22 +78,24 @@ void Skeleton::PostUpdate()
 
 void Skeleton::UpdateEnemyState()
 {
-	switch (m_eEnemyState)
+	ChangeEnemyState();
+
+	switch (m_eNextEnemyState)
 	{
 	case BaseEnemy::EnemyState::IDLE:
-		m_polygon->SetUVRect(m_idle[(int)PlayAnim(0.1,3,m_animCnt,m_eEnemyState, m_attackFlg)]);
+		m_polygon->SetUVRect(m_idle[(int)PlayAnim(0.1,3)]);
 		break;
 	case BaseEnemy::EnemyState::WALK:
-		m_polygon->SetUVRect(m_walk[(int)PlayAnim(0.15, 3, m_animCnt, m_eEnemyState, m_attackFlg)]);
+		m_polygon->SetUVRect(m_walk[(int)PlayAnim(0.15, 3)]);
 		break;
 	case BaseEnemy::EnemyState::HIT:
-		m_polygon->SetUVRect(m_hit[(int)PlayAnim(0.2, 3, m_animCnt, m_eEnemyState, m_attackFlg)]);
+		m_polygon->SetUVRect(m_hit[(int)PlayAnim(0.2, 3)]);
 		break;
 	case BaseEnemy::EnemyState::DEATH:
-		m_polygon->SetUVRect(m_death[(int)PlayAnim(0.2, 3, m_animCnt, m_eEnemyState, m_attackFlg)]);
+		m_polygon->SetUVRect(m_death[(int)PlayAnim(0.2, 3)]);
 		break;
 	case BaseEnemy::EnemyState::ATTACK:
-		m_polygon->SetUVRect(m_attack[(int)PlayAnim(0.1, 4, m_animCnt, m_eEnemyState, m_attackFlg)]);
+		m_polygon->SetUVRect(m_attack[(int)PlayAttackAnim(0.1, 7)]);
 		break;
 	}
 

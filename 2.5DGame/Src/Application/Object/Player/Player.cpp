@@ -19,11 +19,25 @@ void Player::Init()
 
 	m_polygon->SetPivot(KdSquarePolygon::PivotType::Center_Bottom);
 
+	m_model = std::make_shared<KdModelData>();
+	m_model->Load("Asset/Models/Enemy/Enemy.gltf");
+
+	// 当たり判定を付けたいから実体化
+	m_pCollider = std::make_unique<KdCollider>();
+
+	// モデルの形状で当たり判定を登録
+	m_pCollider->RegisterCollisionShape(
+		"PlayerCollision",
+		m_model,
+		KdCollider::Type::TypeBump);
+
+	////=======================================
+
 	m_pos = {-10,0,0,};
 	m_scaleX = {};
 
 	// 半径
-	m_radius = 1;
+	m_radius = 1.5;
 
 	// 重力
 	m_gravity = 0.0f;
@@ -31,7 +45,6 @@ void Player::Init()
 	m_transMat = Math::Matrix::Identity;
 	m_scaleMat = Math::Matrix::Identity;
 	m_mWorld = Math::Matrix::Identity;
-
 
 }
 
@@ -70,6 +83,7 @@ void Player::PostUpdate()
 
 	RayCollition(m_pos, 0, 0.2f,KdCollider::TypeGround);
 	SphereCollition(m_pos, 0.8, 0.6, KdCollider::TypeGround);
+	SphereCollition(m_pos, 0.8, 0.6, KdCollider::TypeBump);
 }
 
 void Player::Release()
@@ -187,7 +201,6 @@ void Player::UpdatePlayerState()
 
 		m_polygon->SetUVRect(m_run[(int)PlayAnim(0.2, 6,m_runAnimCnt)]);
 
-
 		break;
 	case PlayerState::GUARD:
 
@@ -281,11 +294,18 @@ void Player::SphereCollition(Math::Vector3& m_pos, float centerY, float radius, 
 
 	// 球に当たったオブジェクト情報を格納するリスト
 	std::list<KdCollider::CollisionResult>retSphereList;
+
+
 	// 全部ジェクトと当たり判定をする!
 	for (auto& obj : SceneManager::Instance().GetObjList())
 	{
-		// 全オブジェクトに対してレイ判定する関数を呼び出す
-		obj->Intersects(sphere, &retSphereList);
+
+		if(obj!=this->shared_from_this() )
+		{
+			// 全オブジェクトに対してレイ判定する関数を呼び出す
+			obj->Intersects(sphere, &retSphereList);
+
+		}
 	}
 
 	// 球に当たったリストから一番近いオブジェクトを探す

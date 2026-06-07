@@ -1,6 +1,5 @@
 ﻿#pragma once
 
-
 class Player :public KdGameObject
 {
 public:
@@ -56,7 +55,7 @@ private:
 
 
 	std::shared_ptr<KdSquarePolygon>m_polygon=nullptr;
-
+	std::shared_ptr<KdModelData>    m_model = nullptr;
 
 	// 行列系
 	Math::Matrix m_transMat=Math::Matrix::Identity;
@@ -104,5 +103,7 @@ private:
 	// 移動
 	int           m_run[7] = {49,50,51,52,53,54,55 };
 
+
+	//std::enable_shared_from_this<Player>m_player;
 
 };

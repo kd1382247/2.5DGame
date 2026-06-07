@@ -8,6 +8,7 @@ void BaseEnemy::Init()
 	m_pDebugWire = std::make_unique<KdDebugWireFrame>();
 
 	m_polygon = nullptr;
+	m_model = nullptr;
 
 	// 移動関連
 	m_pos = m_mWorld.Translation();
@@ -25,14 +26,10 @@ void BaseEnemy::Init()
 
 	// アニメーション関連
 	// 現在の状態を待機状態で初期化
-	m_eEnemyState = EnemyState::IDLE;
+	m_eNowEnemyState = EnemyState::IDLE;
+	m_eNextEnemyState = m_eNowEnemyState;
 
-	// 各アニメカウント
-	m_idleAnimCnt = {};
-	m_walkAnimCnt = {};
-	m_attackAnimCnt = {};
-	m_hitAnimCnt = {};
-	m_deathAnimCnt = {};
+	m_animCnt = {};
 
 	// プレイヤー座標初期化
 	m_playerPos = {};
@@ -51,6 +48,12 @@ void BaseEnemy::DrawLit()
 	{
 		KdShaderManager::Instance().m_StandardShader.DrawPolygon(*m_polygon, m_mWorld);
 	}
+
+	if (m_model)
+	{
+		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_model, m_mWorld);
+	}
+
 }
 
 void BaseEnemy::GenerateDepthMapFromLight()
@@ -58,6 +61,11 @@ void BaseEnemy::GenerateDepthMapFromLight()
 	if(m_polygon)
 	{
 		KdShaderManager::Instance().m_StandardShader.DrawPolygon(*m_polygon, m_mWorld);
+	}
+
+	if (m_model)
+	{
+		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_model, m_mWorld);
 	}
 }
 
@@ -71,26 +79,59 @@ void BaseEnemy::Release()
 	m_polygon = nullptr;
 }
 
-float BaseEnemy::PlayAnim(float cntUp, int maxAnim, float& animCnt,EnemyState &enemyState,bool&attackFlg)
+float BaseEnemy::PlayAnim(float cntUp, int maxAnim)
 {
-	if (animCnt > maxAnim)
+	if (m_animCnt > maxAnim)
 	{
-		animCnt = 0;
+		m_animCnt = 0;
 
-		if (enemyState == EnemyState::ATTACK)
+		if (m_eNextEnemyState != EnemyState::IDLE)
 		{
-			attackFlg = false;
-		}
-
-		if (enemyState != EnemyState::IDLE)
-		{
-			enemyState = EnemyState::IDLE;
+			m_eNextEnemyState = EnemyState::IDLE;
 		}
 	}
 
-	animCnt += cntUp;
+	m_animCnt += cntUp;
 
-	return animCnt;
+	return m_animCnt;
+}
+
+float BaseEnemy::PlayAttackAnim(float cntUp, int maxAnim)
+{
+	if (m_animCnt > maxAnim)
+	{
+		m_animCnt = 0;
+
+
+		m_eNextEnemyState = EnemyState::IDLE;
+
+		m_attackTime = 0;
+		m_attackAnimFlg = false;
+
+		m_attackFlg = false;
+	}
+
+	if (!m_attackAnimFlg)
+	{
+		m_animCnt += cntUp;
+	}
+	else
+	{
+		m_attackTime++;
+	}
+
+	if (m_attackAnimFlg && m_attackTime > 2)
+	{
+		m_attackAnimFlg = false;
+	}
+
+	if (m_attackTime == 0 && m_animCnt > 3)
+	{
+		m_attackAnimFlg = true;
+	}
+
+
+	return m_animCnt;
 }
 
 void BaseEnemy::Move(Math::Vector3 plPos, Math::Vector3& enemyPos, float speed)
@@ -101,26 +142,35 @@ void BaseEnemy::Move(Math::Vector3 plPos, Math::Vector3& enemyPos, float speed)
 	enemyPos += move * speed;
 }
 
-void BaseEnemy::FlipEnemy(Math::Vector3 playerPos, Math::Vector3 enemyPos, float& scale)
+void BaseEnemy::FlipEnemy(Math::Vector3 playerPos, Math::Vector3 enemyPos)
 {
 	if (enemyPos.x > playerPos.x)
 	{
-		scale = -1;
+		m_scale = -1;
 	}
 	if (enemyPos.x < playerPos.x)
 	{
-		scale = 1;
+		m_scale = 1;
 	}
 }
 
-void BaseEnemy::Attack(Math::Vector3 enemyPos, Math::Vector3 playerPos, float enemyRadius, float playerRadius, EnemyState& enemyState, bool& m_attackFlg)
+void BaseEnemy::Attack(Math::Vector3 enemyPos, Math::Vector3 playerPos, float enemyRadius, float playerRadius)
 {
 	Math::Vector3 pos = playerPos - enemyPos;
 
 	if (pos.Length() < enemyRadius + playerRadius)
 	{
 		m_attackFlg = true;
-		enemyState = EnemyState::ATTACK;
+		m_eNextEnemyState = EnemyState::ATTACK;
+	}
+}
+
+void BaseEnemy::ChangeEnemyState()
+{
+	if (m_eNowEnemyState != m_eNextEnemyState)
+	{
+		m_animCnt = 0;
+		m_eNowEnemyState = m_eNextEnemyState;
 	}
 }
 
@@ -180,4 +230,63 @@ void BaseEnemy::RayCollition(Math::Vector3& m_pos, float& gravity,float upPosY, 
 		gravity = 0;
 	}
 }
+
+void BaseEnemy::SphereCollition(Math::Vector3& m_pos, float centerY, float radius, KdCollider::Type type)
+{
+	// ==================
+	// 球(スフィア)判定
+	//===================
+	// 球判定用の変数を用意
+	KdCollider::SphereInfo sphere;
+	// 球の中心座標を設定
+	sphere.m_sphere.Center = m_pos;
+	sphere.m_sphere.Center.y += centerY;
+	// 球の半径を設定
+	sphere.m_sphere.Radius = radius;
+	// 当たり判定をしたいタイプを設定
+	sphere.m_type = type;
+
+	// デバッグ
+	//m_pDebugWire->AddDebugSphere(sphere.m_sphere.Center, sphere.m_sphere.Radius);
+
+	// 球に当たったオブジェクト情報を格納するリスト
+	std::list<KdCollider::CollisionResult>retSphereList;
+	// 全部ジェクトと当たり判定をする!
+	for (auto& obj : SceneManager::Instance().GetObjList())
+	{
+		// 全オブジェクトに対してレイ判定する関数を呼び出す
+		if(obj!=this->shared_from_this())
+		{
+			obj->Intersects(sphere, &retSphereList);
+		}
+	}
+
+	// 球に当たったリストから一番近いオブジェクトを探す
+	float maxOverlap = 0;
+	bool hit = false;
+	Math::Vector3 hitDir;  // 当たった方向
+
+	for (auto& ret : retSphereList)
+	{
+		// 球にめり込んだ長さが一番長いものを探す
+		if (maxOverlap < ret.m_overlapDistance)
+		{
+			// 更新
+			maxOverlap = ret.m_overlapDistance;
+			hitDir = ret.m_hitDir;
+			hit = true;
+		}
+	}
+
+	if (hit == true)
+	{
+		// ※方向ベクトルは絶対長さ１
+		// 正規化 (長さが1)
+		hitDir.Normalize();
+
+		// 押し戻し処理
+		m_pos += hitDir * maxOverlap;
+	}
+}
+
 
