@@ -2,13 +2,16 @@
 
 #include"../../Scene/SceneManager.h"
 
+#include"../Player/Player.h"
+
+#include"../Effects/ChargeEffect/ChargeEffect.h"
+
 void BaseEnemy::Init()
 {
 	// デバッグ用 : KdGameObjectにポインタを用意しているので実体化
 	m_pDebugWire = std::make_unique<KdDebugWireFrame>();
 
 	m_polygon = nullptr;
-	m_model = nullptr;
 
 	// 移動関連
 	m_pos = m_mWorld.Translation();
@@ -31,6 +34,8 @@ void BaseEnemy::Init()
 
 	m_animCnt = {};
 
+	m_outroAnimCnt = {};
+
 	// プレイヤー座標初期化
 	m_playerPos = {};
 	m_playerRadius = {};
@@ -40,20 +45,20 @@ void BaseEnemy::Init()
 	m_transMat = Math::Matrix::Identity;
 	m_mWorld = Math::Matrix::Identity;
 
+	m_pCamera = nullptr;
+	
+	m_spHPBar = nullptr;
+
+	m_hp = maxHP;
+
 }
 
-void BaseEnemy::DrawLit()
+void BaseEnemy::DrawUnLit()
 {
 	if(m_polygon)
 	{
 		KdShaderManager::Instance().m_StandardShader.DrawPolygon(*m_polygon, m_mWorld);
 	}
-
-	if (m_model)
-	{
-		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_model, m_mWorld);
-	}
-
 }
 
 void BaseEnemy::GenerateDepthMapFromLight()
@@ -61,11 +66,6 @@ void BaseEnemy::GenerateDepthMapFromLight()
 	if(m_polygon)
 	{
 		KdShaderManager::Instance().m_StandardShader.DrawPolygon(*m_polygon, m_mWorld);
-	}
-
-	if (m_model)
-	{
-		KdShaderManager::Instance().m_StandardShader.DrawModel(*m_model, m_mWorld);
 	}
 }
 
@@ -84,6 +84,11 @@ float BaseEnemy::PlayAnim(float cntUp, int maxAnim)
 	if (m_animCnt > maxAnim)
 	{
 		m_animCnt = 0;
+
+		if (m_eNextEnemyState == EnemyState::HIT)
+		{
+			m_hitFlg = false;
+		}
 
 		if (m_eNextEnemyState != EnemyState::IDLE)
 		{
@@ -136,10 +141,13 @@ float BaseEnemy::PlayAttackAnim(float cntUp, int maxAnim)
 
 void BaseEnemy::Move(Math::Vector3 plPos, Math::Vector3& enemyPos, float speed)
 {
+	m_eNextEnemyState = EnemyState::WALK;
+
 	Math::Vector3 move = plPos - enemyPos;
 	move.Normalize();
 	move.y = 0;
 	enemyPos += move * speed;
+
 }
 
 void BaseEnemy::FlipEnemy(Math::Vector3 playerPos, Math::Vector3 enemyPos)
@@ -162,7 +170,12 @@ void BaseEnemy::Attack(Math::Vector3 enemyPos, Math::Vector3 playerPos, float en
 	{
 		m_attackFlg = true;
 		m_eNextEnemyState = EnemyState::ATTACK;
+
+		std::shared_ptr<ChargeEffect>chargeEffect = std::make_shared<ChargeEffect>();
+		chargeEffect->SetEnemyInst(std::dynamic_pointer_cast<BaseEnemy>(shared_from_this()));
+		SceneManager::Instance().AddObject(chargeEffect);
 	}
+
 }
 
 void BaseEnemy::ChangeEnemyState()
@@ -174,7 +187,7 @@ void BaseEnemy::ChangeEnemyState()
 	}
 }
 
-void BaseEnemy::RayCollition(Math::Vector3& m_pos, float& gravity,float upPosY, float enableStepHigh, KdCollider::Type type)
+void BaseEnemy::RayCollision(Math::Vector3& m_pos, float& gravity,float upPosY, float enableStepHigh, KdCollider::Type type)
 {
 	// 当てる側
 		// ==================
@@ -195,7 +208,7 @@ void BaseEnemy::RayCollition(Math::Vector3& m_pos, float& gravity,float upPosY, 
 	ray.m_type = type;
 
 	// デバッグ
-	m_pDebugWire->AddDebugLine(ray.m_pos, ray.m_dir, ray.m_range);
+	//m_pDebugWire->AddDebugLine(ray.m_pos, ray.m_dir, ray.m_range);
 
 	// レイに当たったオブジェクト情報を格納するリスト
 	std::list<KdCollider::CollisionResult>retRayList;
@@ -224,6 +237,7 @@ void BaseEnemy::RayCollition(Math::Vector3& m_pos, float& gravity,float upPosY, 
 	}
 	if (hit == true)
 	{
+
 		// 当たっていたらその座標をプレイヤー座標にセット
 		m_pos = hitPos + Math::Vector3(0, 0, 0);
 
@@ -231,7 +245,7 @@ void BaseEnemy::RayCollition(Math::Vector3& m_pos, float& gravity,float upPosY, 
 	}
 }
 
-void BaseEnemy::SphereCollition(Math::Vector3& m_pos, float centerY, float radius, KdCollider::Type type)
+void BaseEnemy::SphereCollision(Math::Vector3& m_pos, float centerY, float radius, KdCollider::Type type,Math::Color color)
 {
 	// ==================
 	// 球(スフィア)判定
@@ -247,7 +261,7 @@ void BaseEnemy::SphereCollition(Math::Vector3& m_pos, float centerY, float radiu
 	sphere.m_type = type;
 
 	// デバッグ
-	//m_pDebugWire->AddDebugSphere(sphere.m_sphere.Center, sphere.m_sphere.Radius);
+	//m_pDebugWire->AddDebugSphere(sphere.m_sphere.Center, sphere.m_sphere.Radius,color);
 
 	// 球に当たったオブジェクト情報を格納するリスト
 	std::list<KdCollider::CollisionResult>retSphereList;
@@ -280,6 +294,7 @@ void BaseEnemy::SphereCollition(Math::Vector3& m_pos, float centerY, float radiu
 
 	if (hit == true)
 	{
+		hitDir.y = 0;
 		// ※方向ベクトルは絶対長さ１
 		// 正規化 (長さが1)
 		hitDir.Normalize();
@@ -287,6 +302,60 @@ void BaseEnemy::SphereCollition(Math::Vector3& m_pos, float centerY, float radiu
 		// 押し戻し処理
 		m_pos += hitDir * maxOverlap;
 	}
+}
+
+void BaseEnemy::AttackArcCollision(Math::Vector3& m_pos, float centerY, float radius, KdCollider::Type type, Math::Color color)
+{
+
+	// ==================
+	// 球(スフィア)判定
+	//===================
+	// 球判定用の変数を用意
+	KdCollider::SphereInfo sphere;
+	// 球の中心座標を設定
+	sphere.m_sphere.Center = m_pos;
+	sphere.m_sphere.Center.y += centerY;
+	// 球の半径を設定
+	sphere.m_sphere.Radius = radius;
+	// 当たり判定をしたいタイプを設定
+	sphere.m_type = type;
+
+	// デバッグ
+	//m_pDebugWire->AddDebugSphere(sphere.m_sphere.Center, sphere.m_sphere.Radius,color);
+
+	// 全部ジェクトと当たり判定をする!
+	for (auto& obj : SceneManager::Instance().GetObjList())
+	{
+		// 全オブジェクトに対してレイ判定する関数を呼び出す
+		if (obj->Intersects(sphere, nullptr) == true)
+		{
+			
+			bool damageFlg = false;
+
+			if(m_wpPlayer.expired()==false)
+			{
+				damageFlg = m_wpPlayer.lock()->GetDamageFlg();
+			}
+
+			if (damageFlg)
+			{
+				m_hitFlg = true;
+				m_attackFlg = false;
+				m_eNextEnemyState = EnemyState::HIT;
+				m_animCnt = 0;
+				m_hp -= 10;
+				if (m_hp <= 0)
+				{
+					m_hp = 0;
+					m_outroFlg = true;
+					m_eNextEnemyState = EnemyState::DEATH;
+				}
+
+			}
+		}
+	}
+
+	
 }
 
 

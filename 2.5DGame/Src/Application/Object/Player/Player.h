@@ -1,18 +1,21 @@
 ﻿#pragma once
 
+class HPBar;
+
 class Player :public KdGameObject
 {
 public:
 
 	Player() { Init(); }
-	~Player()override{}
+	~Player()override { Release(); }
 
 
 	void Init()                     override;
 
 	void GenerateDepthMapFromLight()override;
-	void DrawLit()                  override;
 	void DrawUnLit()                override;
+	void DrawSprite()               override;
+
 
 	void Update()                   override;
 	void PostUpdate()               override;
@@ -21,7 +24,11 @@ public:
 	// クラス外使用の関数
 	//=================================
 
+	void SetCameraInst(KdCamera* camera) { m_pCamera = camera; }
+
 	float GetRadius() { return m_radius; }
+
+	bool  GetDamageFlg() { return m_damageFlg; }
 
 private:
 
@@ -44,8 +51,8 @@ private:
 	void Attack();
 	void UpdatePlayerState();
 
-	void RayCollition(Math::Vector3 &m_pos,float upPosY, float enableStepHigh,KdCollider::Type type);
-	void SphereCollition(Math::Vector3 &m_pos,float centerY,float radius,KdCollider::Type type);
+	void RayCollision(Math::Vector3 &m_pos,float upPosY, float enableStepHigh,KdCollider::Type type);
+	void SphereCollision(Math::Vector3 &m_pos,float centerY,float radius,KdCollider::Type type);
 
 
 	float PlayAnim(float cntUp,int maxAnim,float & animCnt);
@@ -55,7 +62,8 @@ private:
 
 
 	std::shared_ptr<KdSquarePolygon>m_polygon=nullptr;
-	std::shared_ptr<KdModelData>    m_model = nullptr;
+
+	KdTexture m_tex;
 
 	// 行列系
 	Math::Matrix m_transMat=Math::Matrix::Identity;
@@ -71,6 +79,12 @@ private:
 	Math::Vector3 m_pos = Math::Vector3::Zero;
 	Math::Vector3 m_moveVec = {};
 	const float   moveSpd = 0.15f;
+
+	// HP
+	int           m_hp = {};
+	const int     maxHP = 100;
+
+	bool          m_damageFlg = {};
 
 	// 半径
 	float         m_radius = {};
@@ -103,7 +117,8 @@ private:
 	// 移動
 	int           m_run[7] = {49,50,51,52,53,54,55 };
 
+	std::shared_ptr<HPBar>m_spHPBar=nullptr;
 
-	//std::enable_shared_from_this<Player>m_player;
-
+	
+	KdCamera* m_pCamera = nullptr;
 };

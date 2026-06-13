@@ -2,6 +2,10 @@
 
 class Player;
 
+class HPBar;
+
+class ChargeEffect;
+
 class BaseEnemy :public KdGameObject
 {
 public:
@@ -11,9 +15,9 @@ public:
 
 	void Init()                         override;
 
-	void DrawLit()                      override;
+	void DrawUnLit()                      override;
 	void GenerateDepthMapFromLight()	override;
-	//void PreUpdate()                    override;
+
 	void Update()                       override;
 
 	// プレイヤーのインスタンスをウィークポインタで取得
@@ -22,8 +26,16 @@ public:
 		m_wpPlayer = player;
 	}
 
+	void SetCameraInst(KdCamera* camera)
+	{
+		m_pCamera = camera;
+	}
 
 	bool GetAttackFlg() { return m_attackFlg; }
+
+	bool GetOutroFlg() { return m_outroFlg; }
+
+	Math::Vector3 GetPlayerPos() { return m_playerPos; }
 
 private:
 
@@ -45,15 +57,27 @@ protected:
 		ATTACK
 	};
 	
+	///////////////////////////////////////
+	// ポインタ
+	///////////////////////////////////////
 
 	// 板ポリ
 	std::shared_ptr<KdSquarePolygon>m_polygon = nullptr;
 
-	// モデル
-	std::shared_ptr<KdModelData>m_model = nullptr;
-
 	// プレイヤーのウィークポインタ
 	std::weak_ptr<Player>m_wpPlayer;
+
+	// カメラポインタ
+	KdCamera* m_pCamera = nullptr;
+	
+	// HPバーのポインタ
+	std::shared_ptr<HPBar>m_spHPBar=nullptr;
+
+	std::shared_ptr<ChargeEffect>m_spChargeEffect=nullptr;
+
+	///////////////////////////////////////
+	// 変数
+	///////////////////////////////////////
 
 	// プレイヤーの座標
 	Math::Vector3 m_playerPos = {};
@@ -64,11 +88,22 @@ protected:
 	Math::Vector3 m_moveVec = {};
 	float         m_speed = {};
 
+	
+
+	int           m_hp = {};
+	const int     maxHP = 100;
+
+	bool          m_hitFlg = {};
+
 	// 半径
 	float         m_radius = {};
 
+	// 攻撃フラグ
 	bool          m_attackFlg = {};
 
+	// アウトロフラグ
+	bool          m_outroFlg = {};
+	const int     maxOutroAnim = 12;
 	// 敵の状態
 	EnemyState   m_eNowEnemyState = EnemyState::IDLE;
 	EnemyState   m_eNextEnemyState=m_eNowEnemyState;
@@ -76,6 +111,8 @@ protected:
 
 	// アニメカウント
 	float m_animCnt = {};
+
+	float m_outroAnimCnt = {};
 
 	// スケール
 	float m_scale = {};
@@ -87,6 +124,10 @@ protected:
 	Math::Matrix m_transMat=Math::Matrix::Identity;
 	Math::Matrix m_scaleMat = Math::Matrix::Identity;
 
+	///////////////////////////////////////////////
+	//                 関数
+	///////////////////////////////////////////////
+	
 	// アニメーション関数
 	float PlayAnim(float cntUp, int maxAnim);
 
@@ -103,9 +144,12 @@ protected:
 	void ChangeEnemyState();
 
 	// レイ判定
-	void RayCollition(Math::Vector3& m_pos, float& gravity, float upPosY, float enableStepHigh, KdCollider::Type type);
+	void RayCollision(Math::Vector3& m_pos, float& gravity, float upPosY, float enableStepHigh, KdCollider::Type type);
 
-	// プレイヤーの衝突判定
-	void SphereCollition(Math::Vector3& m_pos, float centerY, float radius, KdCollider::Type type);
+	// オブジェクトのスフィア判定
+	void SphereCollision(Math::Vector3& m_pos, float centerY, float radius, KdCollider::Type type,Math::Color color= kWhiteColor);
+
+	// プレイヤーの攻撃範囲入っているか
+	void AttackArcCollision(Math::Vector3& m_pos, float centerY, float radius, KdCollider::Type type, Math::Color color = kWhiteColor);
 
 };

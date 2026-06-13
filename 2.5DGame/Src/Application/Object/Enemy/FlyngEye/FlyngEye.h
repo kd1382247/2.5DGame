@@ -1,17 +1,23 @@
 ﻿#pragma once
 #include"../../Enemy/BaseEnemy.h"
 
+
 class FlyingEye :public BaseEnemy
 {
 public:
 
 	FlyingEye() { Init(); }
-	~FlyingEye()override {}
+	~FlyingEye()override { Release(); }
 
 	void Init()      override;
 	void Update()    override;
 	void PostUpdate()override;
 
+	void DrawSprite()override;
+
+	void OutroUpdate();
+
+	void OnHit();
 
 private:
 
@@ -20,9 +26,9 @@ private:
 
 
 	// アニメーション変数
-	int m_idle[8] = { 0,1,2,3,4,5,6,7 };
-	int m_hit[4] = { 8,19,10,11 };
-	int m_death[4] = { 15,16,17,18 };
+	int m_walk[8] = { 0,1,2,3,4,5,6,7 };
+	int m_hit[4] = { 8,9,10,11 };
+	int m_death[13] = { 8,9,10,11,16,16,17,17,18,18,19,19,19 };
 	int m_attack[8] = { 24,25,26,27,28,29,30,31 };
-
+	
 };

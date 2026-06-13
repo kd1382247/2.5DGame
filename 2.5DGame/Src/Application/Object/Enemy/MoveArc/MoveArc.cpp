@@ -78,5 +78,5 @@ void MoveArc::PostUpdate()
 
 void MoveArc::DrawUnLit()
 {
-	KdShaderManager::Instance().m_StandardShader.DrawModel(*m_mode, m_mWorld,kRedColor);
+	//KdShaderManager::Instance().m_StandardShader.DrawModel(*m_mode, m_mWorld,kRedColor);
 }

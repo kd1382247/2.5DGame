@@ -1,6 +1,10 @@
 ﻿#include "Goblin.h"
 
+#include"../../../Scene/SceneManager.h"
 #include"../../Player/Player.h"
+#include"../../UI/HPBar/HPBar.h"
+#include"../../Effects/SmokeEffect/SmokeEffect.h"
+#include"../../../AttackArc/GoblinAttackArc/GoblinAttackArc.h"
 
 void Goblin::Init()
 {
@@ -18,28 +22,31 @@ void Goblin::Init()
 
 	m_radius = 1.5;
 
-
-	m_model = std::make_shared<KdModelData>();
-	m_model->Load("Asset/Models/Enemy/Enemy.gltf");
-
 	// 当たり判定を付けたいから実体化
 	m_pCollider = std::make_unique<KdCollider>();
 
 	// モデルの形状で当たり判定を登録
 	m_pCollider->RegisterCollisionShape(
-		"PlayerCollision",
-		m_model,
+		"GoblinCollision",
+		{0,0.5,0},
+		0.5,
 		KdCollider::Type::TypeBump);
 
 	//=======================================
 
-
-
+	m_spHPBar = std::make_shared<HPBar>();
 }
 
 
 void Goblin::Update()
 {
+
+	if (m_outroFlg)
+	{
+		OutroUpdate();
+		m_spHPBar->Update(m_hp, maxHP);
+		return;
+	}
 
 	m_playerPos = {};
 	if (m_wpPlayer.expired() == false)
@@ -48,29 +55,62 @@ void Goblin::Update()
 		m_playerPos = spPlayer->GetPos();
 	}
 
-	if(!m_attackFlg)
+	if (!m_hitFlg)
 	{
-		Move(m_playerPos, m_pos, m_speed);
+		if (!m_attackFlg)
+		{
+			Move(m_playerPos, m_pos, m_speed);
 
-		FlipEnemy(m_playerPos, m_pos);
+			FlipEnemy(m_playerPos, m_pos);
+
+			Attack(m_pos, m_playerPos, m_radius, m_playerRadius);
+
+			m_goblinAtkArc = nullptr;
+		}
+		else
+		{
+			if (m_goblinAtkArc == nullptr)
+			{
+				m_goblinAtkArc = std::make_shared<GoblinAttackArc>();
+				m_goblinAtkArc->SetGoblinInst(std::dynamic_pointer_cast<Goblin>(shared_from_this()));
+				m_goblinAtkArc->SetPos(m_pos + Math::Vector3(0, 0.1, 0));
+				m_goblinAtkArc->SetPlayerPos(m_playerPos);
+				SceneManager::Instance().AddObject(m_goblinAtkArc);
+			}
+			else
+			{
+				m_goblinAtkArc->SetPos(m_pos + Math::Vector3(0, 0.1, 0));
+			}
+		}
+
 	}
 
-	Attack(m_pos, m_playerPos, m_radius, m_playerRadius);
 	UpdateEnemyState();
+
+	m_spHPBar->Update(m_hp, maxHP);
 }
 
 void Goblin::PostUpdate()
 {
 
-	RayCollition(m_pos, m_gravity, 0, 0.2, KdCollider::TypeGround);
+	RayCollision(m_pos, m_gravity, 0, 0.2, KdCollider::TypeGround);
 
-	SphereCollition(m_pos, 1, 0.8, KdCollider::TypeBump);
-	SphereCollition(m_pos, 1, 0.8, KdCollider::TypeGround);
+	SphereCollision(m_pos, 1, 0.5, KdCollider::TypeBump);
+	SphereCollision(m_pos, 1, 0.5, KdCollider::TypeGround);
+
+	AttackArcCollision(m_pos, 1, 0.5, KdCollider::TypeDamage);
 
 	m_transMat = Math::Matrix::CreateTranslation(m_pos);
 	m_scaleMat = Math::Matrix::CreateScale({ m_scale,1.0f,1.0f });
 
 	m_mWorld = m_scaleMat * m_transMat;
+}
+
+void Goblin::DrawSprite()
+{
+	Math::Vector3 hpPos = m_mWorld.Translation();
+	m_pCamera->ConvertWorldToScreenDetail(GetPos(), hpPos);
+	m_spHPBar->Draw(hpPos, false);
 }
 
 void Goblin::UpdateEnemyState()
@@ -89,9 +129,6 @@ void Goblin::UpdateEnemyState()
 	case BaseEnemy::EnemyState::HIT:
 		m_polygon->SetUVRect(m_hit[(int)PlayAnim(0.2, 3)]);
 		break;
-	case BaseEnemy::EnemyState::DEATH:
-		m_polygon->SetUVRect(m_death[(int)PlayAnim(0.2, 3)]);
-		break;
 	case BaseEnemy::EnemyState::ATTACK:
 		m_polygon->SetUVRect(m_attack[(int)PlayAttackAnim(0.1, 7)]);
 		break;
@@ -99,8 +136,30 @@ void Goblin::UpdateEnemyState()
 
 }
 
-void Goblin::Release()
+void Goblin::OutroUpdate()
 {
 
+	ChangeEnemyState();
+	m_polygon->SetUVRect(m_death[(int)m_outroAnimCnt]);
+
+	if (m_outroAnimCnt > maxOutroAnim)
+	{
+		m_isExpired = true;
+
+		std::shared_ptr<SmokeEffect>smoke = std::make_shared<SmokeEffect>();
+		smoke->SetPos(m_pos);
+		SceneManager::Instance().AddObject(smoke);
+	}
+	else
+	{
+		m_outroAnimCnt += 0.2;
+	}
+
+	
+}
+
+void Goblin::Release()
+{
+	
 }
 

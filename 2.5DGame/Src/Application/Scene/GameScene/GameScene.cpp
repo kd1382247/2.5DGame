@@ -5,8 +5,10 @@
 
 #include"../../main.h"
 
-#include"../../AttackArc/AttackArc.h"
 #include"../../Object/Enemy/MoveArc/MoveArc.h"
+
+#include"../../AttackArc/PlayerAttackArc/PlayerAttackArc.h"
+#include"../../AttackArc/SkeletonAttackArc/SkeletonAttackArc.h"
 
 #include"../../Object/Ground/Ground.h"
 #include"../../Object/Wall/Wall.h"
@@ -22,6 +24,10 @@
 
 void GameScene::Event()
 {
+
+	// 現在のオブジェクト数をデバッグ
+	KdDebugGUI::Instance().ClearLog();
+	KdDebugGUI::Instance().AddLog("%d", (int)m_objList.size());
 
 	// タイトルに戻る
 	if (GetAsyncKeyState('T') & 0x8000)
@@ -83,75 +89,50 @@ void GameScene::Init()
 	
 	std::shared_ptr<Player>player;
 	player = std::make_shared<Player>();
+	player->SetCameraInst(m_camera.get());
 	m_objList.push_back(player);
 
-	std::shared_ptr<AttackArc>attackArc;
-	attackArc = std::make_shared<AttackArc>();
-	attackArc->SetPlayerInst(player);
-	m_objList.push_back(attackArc);
+	std::shared_ptr<PlayerAttackArc> playerAtkArc = std::make_shared<PlayerAttackArc>();
+	playerAtkArc->SetPlayerInst(player);
+	m_objList.push_back(playerAtkArc);
+
 
 
 	std::shared_ptr<Mushroom>mushroom;
 	mushroom = std::make_shared<Mushroom>();
 	mushroom->SetPlayerInst(player);
+	mushroom->SetCameraInst(m_camera.get());
 	m_objList.push_back(mushroom);
 
-	{
-		std::shared_ptr<MoveArc>moveArc = std::make_shared<MoveArc>();
-		moveArc->SetPlayerInst(player);
-		moveArc->SetEnemyInst(mushroom);
-		moveArc->SetPos({ 0,0.8,-0.2 });
-		m_objList.push_back(moveArc);
-	}
 
 
 
 	std::shared_ptr<Goblin>goblin;
 	goblin = std::make_shared<Goblin>();
 	goblin->SetPlayerInst(player);
+	goblin->SetCameraInst(m_camera.get());
 	m_objList.push_back(goblin);
 
-	{
-		std::shared_ptr<MoveArc>moveArc = std::make_shared<MoveArc>();
-		moveArc->SetPlayerInst(player);
-		moveArc->SetEnemyInst(goblin);
-		moveArc->SetPos({ 0,0.8,-0.2 });
-		m_objList.push_back(moveArc);
-	}
 
 
 	std::shared_ptr<FlyingEye>flyingEye;
 	flyingEye = std::make_shared<FlyingEye>();
 	flyingEye->SetPlayerInst(player);
+	flyingEye->SetCameraInst(m_camera.get());
 	m_objList.push_back(flyingEye);
-
-	{
-		std::shared_ptr<MoveArc>moveArc = std::make_shared<MoveArc>();
-		moveArc->SetPlayerInst(player);
-		moveArc->SetEnemyInst(flyingEye);
-		moveArc->SetPos({ 0,0.8,-0.2 });
-		m_objList.push_back(moveArc);
-	}
 
 	std::shared_ptr<Skeleton>skeleton;
 	skeleton = std::make_shared<Skeleton>();
 	skeleton->SetPlayerInst(player);
+	skeleton->SetCameraInst(m_camera.get());
 	m_objList.push_back(skeleton);
 
-	{
-		std::shared_ptr<MoveArc>moveArc = std::make_shared<MoveArc>();
-		moveArc->SetPlayerInst(player);
-		moveArc->SetEnemyInst(skeleton);
-		moveArc->SetPos({ 0,0.8,-0.2 });
-		m_objList.push_back(moveArc);
-	}
 
 	std::shared_ptr<Tree>tree;
 	tree = std::make_shared<Tree>();
 	m_objList.push_back(tree);
 
 	m_wpPlayer = player;
-	
 }
 
 

@@ -2,6 +2,9 @@
 
 #include"../../Scene/SceneManager.h"
 #include"../../Mouse/Mouse.h"
+#include"../UI/HPBar/HPBar.h"
+
+#include"../Effects/SlashEffect/SlashEffect.h"
 
 void Player::Init()
 {
@@ -19,8 +22,8 @@ void Player::Init()
 
 	m_polygon->SetPivot(KdSquarePolygon::PivotType::Center_Bottom);
 
-	m_model = std::make_shared<KdModelData>();
-	m_model->Load("Asset/Models/Enemy/Enemy.gltf");
+	m_tex.Load("Asset/Textures/HpBar/All.png");
+
 
 	// 当たり判定を付けたいから実体化
 	m_pCollider = std::make_unique<KdCollider>();
@@ -28,13 +31,16 @@ void Player::Init()
 	// モデルの形状で当たり判定を登録
 	m_pCollider->RegisterCollisionShape(
 		"PlayerCollision",
-		m_model,
+		{0,0.5,0},
+		0.3,
 		KdCollider::Type::TypeBump);
 
 	////=======================================
 
 	m_pos = {-10,0,0,};
 	m_scaleX = {};
+
+	m_hp = maxHP;
 
 	// 半径
 	m_radius = 1.5;
@@ -46,6 +52,8 @@ void Player::Init()
 	m_scaleMat = Math::Matrix::Identity;
 	m_mWorld = Math::Matrix::Identity;
 
+	m_spHPBar = std::make_shared<HPBar>();
+
 }
 
 void Player::GenerateDepthMapFromLight()
@@ -53,14 +61,18 @@ void Player::GenerateDepthMapFromLight()
 	KdShaderManager::Instance().m_StandardShader.DrawPolygon(*m_polygon, m_mWorld);
 }
 
-void Player::DrawLit()
+void Player::DrawUnLit()
 {
 	KdShaderManager::Instance().m_StandardShader.DrawPolygon(*m_polygon, m_mWorld);
 }
 
-void Player::DrawUnLit()
+void Player::DrawSprite()
 {
+	Math::Vector3 hpPos = m_mWorld.Translation();
 
+	m_pCamera->ConvertWorldToScreenDetail(hpPos, hpPos);
+
+	m_spHPBar->Draw(hpPos, true);
 }
 
 void Player::Update()
@@ -73,7 +85,6 @@ void Player::Update()
 
 void Player::PostUpdate()
 {
-	
 
 	// 行列作成
 	m_transMat = Math::Matrix::CreateTranslation(m_pos);
@@ -81,9 +92,11 @@ void Player::PostUpdate()
 	m_mWorld =m_scaleMat * m_transMat;
 
 
-	RayCollition(m_pos, 0, 0.2f,KdCollider::TypeGround);
-	SphereCollition(m_pos, 0.8, 0.6, KdCollider::TypeGround);
-	SphereCollition(m_pos, 0.8, 0.6, KdCollider::TypeBump);
+	RayCollision(m_pos, 0, 0.2f,KdCollider::TypeGround);
+	SphereCollision(m_pos, 1, 0.5, KdCollider::TypeGround);
+	SphereCollision(m_pos, 1, 0.3, KdCollider::TypeBump);
+
+	m_spHPBar->Update(m_hp, maxHP);
 }
 
 void Player::Release()
@@ -118,6 +131,7 @@ void Player::Move()
 
 			m_idleAnimCnt = 0;
 		}
+
 	}
 
 	// 正規化
@@ -132,16 +146,22 @@ void Player::Move()
 
 void Player::Attack()
 {
+	m_damageFlg = false;
+
 	if (GetAsyncKeyState(VK_LBUTTON) & 0x8000)
 	{
 		if (!m_attackFlg)
 		{
 			m_attackFlg = true;
 
+			m_damageFlg = true;
+
 			m_inputWindowFrame = 0;
 			m_inputWindowFlg = false;
 
-			if(m_attackPattern==(int)PlayerState::ATTACK1)
+			Math::Vector3 mousePos = Mouse::Instance().Get3DMousePos();
+
+			if (m_attackPattern == (int)PlayerState::ATTACK1)
 			{
 				e_playerState = PlayerState::ATTACK1;
 			}
@@ -167,6 +187,7 @@ void Player::Attack()
 		{
 			// 1段目の攻撃に戻る
 			m_attackPattern = 0;
+			m_attackFlg = false;
 			m_inputWindowFlg = false;
 		}
 	}
@@ -217,7 +238,7 @@ void Player::UpdatePlayerState()
 	}
 }
 
-void Player::RayCollition(Math::Vector3& m_pos, float upPosY, float enableStepHigh,KdCollider::Type type)
+void Player::RayCollision(Math::Vector3& m_pos, float upPosY, float enableStepHigh,KdCollider::Type type)
 {
 	// 当てる側
 		// ==================
@@ -274,7 +295,7 @@ void Player::RayCollition(Math::Vector3& m_pos, float upPosY, float enableStepHi
 	}
 }
 
-void Player::SphereCollition(Math::Vector3& m_pos, float centerY, float radius, KdCollider::Type type)
+void Player::SphereCollision(Math::Vector3& m_pos, float centerY, float radius, KdCollider::Type type)
 {
 	// ==================
 	// 球(スフィア)判定
@@ -290,7 +311,7 @@ void Player::SphereCollition(Math::Vector3& m_pos, float centerY, float radius, 
 	sphere.m_type = type;
 
 	// デバッグ
-	m_pDebugWire->AddDebugSphere(sphere.m_sphere.Center, sphere.m_sphere.Radius);
+	//m_pDebugWire->AddDebugSphere(sphere.m_sphere.Center, sphere.m_sphere.Radius);
 
 	// 球に当たったオブジェクト情報を格納するリスト
 	std::list<KdCollider::CollisionResult>retSphereList;
@@ -327,6 +348,8 @@ void Player::SphereCollition(Math::Vector3& m_pos, float centerY, float radius, 
 
 	if (hit == true)
 	{
+		hitDir.y = 0;
+
 		// ※方向ベクトルは絶対長さ１
 		// 正規化 (長さが1)
 		hitDir.Normalize();

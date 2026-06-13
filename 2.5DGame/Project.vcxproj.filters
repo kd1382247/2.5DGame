@@ -115,6 +115,33 @@
     <Filter Include="Src\Application\Object\Enemy\MoveArc">
       <UniqueIdentifier>{d5294e54-b7fc-4bff-ad2a-ed8e7cad32e3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\Object\UI">
+      <UniqueIdentifier>{cdc0e416-0109-44ed-8977-c696bbd123b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\Object\UI\HPBar">
+      <UniqueIdentifier>{ff121a84-0337-4efd-90ad-53f0e1726736}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\Object\Effects">
+      <UniqueIdentifier>{88c6dfd0-79cc-44d4-a01a-556028144603}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\Object\Effects\SlashEffect">
+      <UniqueIdentifier>{12b2ea48-0491-40ad-8774-5aefdd9a8ea3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\Object\Effects\SmokeEffect">
+      <UniqueIdentifier>{3820a17c-221e-497e-a028-4da8a8804ac0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\Object\Effects\ChargeEffect">
+      <UniqueIdentifier>{131104c9-1539-46d2-b097-390d13e699f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\AttackArc\SkeletonAttackArc">
+      <UniqueIdentifier>{24e0a073-58b4-456a-86a6-edab29df2a52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\AttackArc\PlayerAttackArc">
+      <UniqueIdentifier>{ee61b558-a0c2-4266-bdd6-801da8ef766e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\AttackArc\GoblinAttackArc">
+      <UniqueIdentifier>{d69d2a41-2921-4e1c-8b89-1a4bd342ca31}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -303,9 +330,6 @@
     <ClInclude Include="Src\Application\Object\Enemy\BaseEnemy.h">
       <Filter>Src\Application\Object\Enemy</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Application\AttackArc\AttackArc.h">
-      <Filter>Src\Application\AttackArc</Filter>
-    </ClInclude>
     <ClInclude Include="Src\Application\Object\Enemy\Mushroom\Mushroom.h">
       <Filter>Src\Application\Object\Enemy\Mushroom</Filter>
     </ClInclude>
@@ -326,6 +350,27 @@
     </ClInclude>
     <ClInclude Include="Src\Application\Object\Enemy\MoveArc\MoveArc.h">
       <Filter>Src\Application\Object\Enemy\MoveArc</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Object\UI\HPBar\HPBar.h">
+      <Filter>Src\Application\Object\UI\HPBar</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Object\Effects\SlashEffect\SlashEffect.h">
+      <Filter>Src\Application\Object\Effects\SlashEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Object\Effects\SmokeEffect\SmokeEffect.h">
+      <Filter>Src\Application\Object\Effects\SmokeEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Object\Effects\ChargeEffect\ChargeEffect.h">
+      <Filter>Src\Application\Object\Effects\ChargeEffect</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\AttackArc\PlayerAttackArc\PlayerAttackArc.h">
+      <Filter>Src\Application\AttackArc\PlayerAttackArc</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\AttackArc\SkeletonAttackArc\SkeletonAttackArc.h">
+      <Filter>Src\Application\AttackArc\SkeletonAttackArc</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\AttackArc\GoblinAttackArc\GoblinAttackArc.h">
+      <Filter>Src\Application\AttackArc\GoblinAttackArc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -485,9 +530,6 @@
     <ClCompile Include="Src\Application\Object\Enemy\BaseEnemy.cpp">
       <Filter>Src\Application\Object\Enemy</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Application\AttackArc\AttackArc.cpp">
-      <Filter>Src\Application\AttackArc</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Application\Object\Enemy\Mushroom\Mushroom.cpp">
       <Filter>Src\Application\Object\Enemy\Mushroom</Filter>
     </ClCompile>
@@ -508,6 +550,27 @@
     </ClCompile>
     <ClCompile Include="Src\Application\Object\Enemy\MoveArc\MoveArc.cpp">
       <Filter>Src\Application\Object\Enemy\MoveArc</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Object\UI\HPBar\HPBar.cpp">
+      <Filter>Src\Application\Object\UI\HPBar</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Object\Effects\SlashEffect\SlashEffect.cpp">
+      <Filter>Src\Application\Object\Effects\SlashEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Object\Effects\SmokeEffect\SmokeEffect.cpp">
+      <Filter>Src\Application\Object\Effects\SmokeEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Object\Effects\ChargeEffect\ChargeEffect.cpp">
+      <Filter>Src\Application\Object\Effects\ChargeEffect</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\AttackArc\PlayerAttackArc\PlayerAttackArc.cpp">
+      <Filter>Src\Application\AttackArc\PlayerAttackArc</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\AttackArc\SkeletonAttackArc\SkeletonAttackArc.cpp">
+      <Filter>Src\Application\AttackArc\SkeletonAttackArc</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\AttackArc\GoblinAttackArc\GoblinAttackArc.cpp">
+      <Filter>Src\Application\AttackArc\GoblinAttackArc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
