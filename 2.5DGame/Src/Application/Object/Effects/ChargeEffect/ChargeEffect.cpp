@@ -36,7 +36,7 @@ void ChargeEffect::Update()
 	}
 
 	m_polygon->SetUVRect((int)m_animCnt);
-
+	
 
 	m_mWorld = Math::Matrix::CreateTranslation(m_wpEnemy.lock()->GetPos()+Math::Vector3(0,0,-0.2));
 	

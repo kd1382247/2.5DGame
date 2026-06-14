@@ -54,12 +54,14 @@ private:
 	void RayCollision(Math::Vector3 &m_pos,float upPosY, float enableStepHigh,KdCollider::Type type);
 	void SphereCollision(Math::Vector3 &m_pos,float centerY,float radius,KdCollider::Type type);
 
+	void Damage();
 
 	float PlayAnim(float cntUp,int maxAnim,float & animCnt);
 	float PlayAnim(float cntUp,int maxAnim);
 
 	void FlipCharacter();
 
+	void ChangePlayerState();
 
 	std::shared_ptr<KdSquarePolygon>m_polygon=nullptr;
 
@@ -86,6 +88,8 @@ private:
 
 	bool          m_damageFlg = {};
 
+	bool          m_hitFlg = {};
+
 	// 半径
 	float         m_radius = {};
 
@@ -95,9 +99,13 @@ private:
 	float         m_inputWindowFrame = {};
 	bool          m_inputWindowFlg = {};
 
+	float         m_animCnt = {};
 
 	// アニメーション系
 	PlayerState   e_playerState = PlayerState::IDLE;
+
+	PlayerState   m_eNowPlayerState = PlayerState::IDLE;
+	PlayerState   m_eNextPlayerState = m_eNowPlayerState;
 
 	float         m_runAnimCnt = {};
 	float         m_idleAnimCnt = {};
@@ -111,6 +119,7 @@ private:
 	// 攻撃3
 	int           m_attack3[6]= { 24,25,26,27,28,29 };
 
+	int           m_hit[4] = {72,73,74,75};
 	// 待機モーション
 	int           m_idle[7] =   { 36,37,38,39,40,41,42 };
 

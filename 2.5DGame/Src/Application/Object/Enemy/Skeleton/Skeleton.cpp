@@ -59,7 +59,7 @@ void Skeleton::Update()
 	
 	if (!m_hitFlg)
 	{
-		if (!m_attackFlg)
+		if (!m_attackFlg && !m_AtkCoolTimeFlg)
 		{
 			Move(m_playerPos, m_pos, m_speed);
 
@@ -85,6 +85,8 @@ void Skeleton::Update()
 		}
 
 	}
+
+	AttackCoolTime();
 
 	UpdateEnemyState();
 

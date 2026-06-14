@@ -18,6 +18,9 @@ public:
 
 	std::shared_ptr<GoblinAttackArc>& GetGoblin() { return m_goblinAtkArc; }
 
+	void SetCollisionFlg(bool flg)override { m_collisionFlg = flg; }
+	bool GetCollisionFlg()override { return m_collisionFlg; }
+
 private:
 
 	void Release();

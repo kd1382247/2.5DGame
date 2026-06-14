@@ -60,7 +60,7 @@ void Mushroom::Update()
 
 	if (!m_hitFlg)
 	{
-		if (!m_attackFlg)
+		if (!m_attackFlg && !m_AtkCoolTimeFlg)
 		{
 			Move(m_playerPos, m_pos, m_speed);
 
@@ -68,8 +68,11 @@ void Mushroom::Update()
 			Attack(m_pos, m_playerPos, m_radius, m_playerRadius);
 		}
 
-		
+	
 	}
+
+	AttackCoolTime();
+
 	UpdateEnemyState();
 
 	m_spHPBar->Update(m_hp, maxHP);

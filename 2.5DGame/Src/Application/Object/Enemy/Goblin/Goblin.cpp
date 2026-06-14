@@ -57,7 +57,7 @@ void Goblin::Update()
 
 	if (!m_hitFlg)
 	{
-		if (!m_attackFlg)
+		if (!m_attackFlg && !m_AtkCoolTimeFlg)
 		{
 			Move(m_playerPos, m_pos, m_speed);
 
@@ -84,6 +84,8 @@ void Goblin::Update()
 		}
 
 	}
+
+	AttackCoolTime();
 
 	UpdateEnemyState();
 
@@ -112,6 +114,7 @@ void Goblin::DrawSprite()
 	m_pCamera->ConvertWorldToScreenDetail(GetPos(), hpPos);
 	m_spHPBar->Draw(hpPos, false);
 }
+
 
 void Goblin::UpdateEnemyState()
 {

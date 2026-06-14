@@ -79,7 +79,6 @@ void Player::Update()
 {
 	Move();
 	Attack();
-	UpdatePlayerState();
 	FlipCharacter();
 }
 
@@ -96,6 +95,9 @@ void Player::PostUpdate()
 	SphereCollision(m_pos, 1, 0.5, KdCollider::TypeGround);
 	SphereCollision(m_pos, 1, 0.3, KdCollider::TypeBump);
 
+	Damage();
+
+	UpdatePlayerState();
 	m_spHPBar->Update(m_hp, maxHP);
 }
 
@@ -117,19 +119,19 @@ void Player::Move()
 		if (GetAsyncKeyState('A') & 0x8000)m_moveVec.x = -1.0f;
 		if (GetAsyncKeyState('D') & 0x8000)m_moveVec.x = 1.0f;
 
-		// 移動量が0だったら待機モーション
-		if(m_moveVec==Math::Vector3::Zero)
-		{
-			e_playerState = PlayerState::IDLE;
-			
-			m_runAnimCnt = 0;
-		}
-		// 移動量が0以外だったら走るモーション
-		else
-		{
-			e_playerState = PlayerState::RUN;
 
-			m_idleAnimCnt = 0;
+		if(!m_hitFlg)
+		{
+			// 移動量が0だったら待機モーション
+			if (m_moveVec == Math::Vector3::Zero)
+			{
+				m_eNextPlayerState = PlayerState::IDLE;
+			}
+			// 移動量が0以外だったら走るモーション
+			else
+			{
+				m_eNextPlayerState = PlayerState::RUN;
+			}
 		}
 
 	}
@@ -153,7 +155,7 @@ void Player::Attack()
 		if (!m_attackFlg)
 		{
 			m_attackFlg = true;
-
+			m_hitFlg = false;
 			m_damageFlg = true;
 
 			m_inputWindowFrame = 0;
@@ -163,15 +165,15 @@ void Player::Attack()
 
 			if (m_attackPattern == (int)PlayerState::ATTACK1)
 			{
-				e_playerState = PlayerState::ATTACK1;
+				m_eNextPlayerState = PlayerState::ATTACK1;
 			}
 			if (m_attackPattern == (int)PlayerState::ATTACK2)
 			{
-				e_playerState = PlayerState::ATTACK2;
+				m_eNextPlayerState = PlayerState::ATTACK2;
 			}
 			if (m_attackPattern == (int)PlayerState::ATTACK3)
 			{
-				e_playerState = PlayerState::ATTACK3;
+				m_eNextPlayerState = PlayerState::ATTACK3;
 			}
 		}
 	}
@@ -195,8 +197,9 @@ void Player::Attack()
 
 void Player::UpdatePlayerState()
 {
+	ChangePlayerState();
 
-	switch (e_playerState)
+	switch (m_eNextPlayerState)
 	{
 	case PlayerState::ATTACK1:
 		
@@ -215,12 +218,12 @@ void Player::UpdatePlayerState()
 		break;
 	case PlayerState::IDLE:
 
-		m_polygon->SetUVRect(m_idle[(int)PlayAnim(0.15,6,m_idleAnimCnt)]);
+		m_polygon->SetUVRect(m_idle[(int)PlayAnim(0.15,6,m_animCnt)]);
 
 		break;
 	case PlayerState::RUN:
 
-		m_polygon->SetUVRect(m_run[(int)PlayAnim(0.2, 6,m_runAnimCnt)]);
+		m_polygon->SetUVRect(m_run[(int)PlayAnim(0.2, 6,m_animCnt)]);
 
 		break;
 	case PlayerState::GUARD:
@@ -229,7 +232,7 @@ void Player::UpdatePlayerState()
 		break;
 	case PlayerState::HIT:
 
-
+		m_polygon->SetUVRect(m_hit[(int)PlayAnim(0.1, 3, m_animCnt)]);
 		break;
 	case PlayerState::DEATH:
 
@@ -359,16 +362,67 @@ void Player::SphereCollision(Math::Vector3& m_pos, float centerY, float radius, 
 	}
 }
 
+void Player::Damage()
+{
+	//==============
+	// 球判定
+	//==============
+	KdCollider::SphereInfo sphere;
+	sphere.m_sphere.Center = GetPos();
+	sphere.m_sphere.Radius = 0.3;
+	sphere.m_type = KdCollider::TypeDamage;
+
+	// デバッグ
+	//m_pDebugWire->AddDebugSphere(sphere.m_sphere.Center, sphere.m_sphere.Radius, kRedColor);
+
+	// 当たったオブジェクト情報を格納するリストは不要！！
+
+	// 全てのオブジェクトと当たり判定をする
+	for (auto& obj : SceneManager::Instance().GetObjList())
+	{
+		//                           ↓リストをセットしていた
+		if (obj->Intersects(sphere, nullptr) == true)
+		{
+			if(obj->GetCollisionFlg())
+			{
+				// 当たった！！
+				// 敵オブジェクト確定！！
+				obj->OnHit();
+
+				obj->SetCollisionFlg(false);
+				m_hp-=10;
+				m_hitFlg = true;
+				m_eNextPlayerState = PlayerState::HIT;
+
+				if (m_hp < 0)
+				{
+					m_hp = 0;
+				}
+			}
+		}
+	}
+}
+
 float Player::PlayAnim(float cntUp,int maxAnim,float& animCnt)
 {
 
 	if (animCnt >maxAnim)
 	{
 		animCnt = 0;
-		if(e_playerState!=PlayerState::IDLE)
+		
+		if (m_eNextPlayerState == PlayerState::HIT)
 		{
-			e_playerState = PlayerState::IDLE;
+			m_hitFlg = false;
+			m_attackFlg = false;
 		}
+
+
+		if(m_eNextPlayerState !=PlayerState::IDLE)
+		{
+			m_eNextPlayerState = PlayerState::IDLE;
+		}
+
+	
 	}
 
 	animCnt += cntUp;
@@ -379,9 +433,9 @@ float Player::PlayAnim(float cntUp,int maxAnim,float& animCnt)
 
 float Player::PlayAnim(float cntUp, int maxAnim)
 {
-	if (m_attackAnimCnt > maxAnim)
+	if (m_animCnt > maxAnim)
 	{
-		m_attackAnimCnt = 0;
+		m_animCnt = 0;
 		m_attackFlg = false;
 
 		// 攻撃パターンのカウントアップ
@@ -397,20 +451,18 @@ float Player::PlayAnim(float cntUp, int maxAnim)
 		m_inputWindowFlg = true;
 
 		// 攻撃が終われば待機モーション
-		e_playerState = PlayerState::IDLE;
+		m_eNextPlayerState = PlayerState::IDLE;
 	}
 
-	m_attackAnimCnt += cntUp;
+	m_animCnt += cntUp;
 
-	return m_attackAnimCnt;
+	return m_animCnt;
 }
 
 void Player::FlipCharacter()
 {
 	// マウスのX座標にキャラの向きを合わせる
 
-	if(!m_attackFlg)
-	{
 		if (Mouse::Instance().Get3DMousePos().x > m_pos.x)
 		{
 			m_scaleX = 1;
@@ -419,7 +471,19 @@ void Player::FlipCharacter()
 		{
 			m_scaleX = -1;
 		}
-	}
+	
 
+}
+
+void Player::ChangePlayerState()
+{
+	if (m_eNowPlayerState != m_eNextPlayerState)
+	{
+
+		m_animCnt = 0;
+		m_eNowPlayerState = m_eNextPlayerState;
+
+		
+	}
 }
 

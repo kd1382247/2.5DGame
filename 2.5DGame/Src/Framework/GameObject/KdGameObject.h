@@ -66,6 +66,11 @@ public:
 	bool Intersects(const KdCollider::BoxInfo& targetBox, std::list<KdCollider::CollisionResult>* pResults);
 	bool Intersects(const KdCollider::RayInfo& targetShape, std::list<KdCollider::CollisionResult>* pResults);
 
+	// 6/5黒崎授業で追加
+	virtual void OnHit() {}
+	virtual bool GetCollisionFlg() { return m_collisionFlg; }
+	virtual void SetCollisionFlg(bool flg) { m_collisionFlg = flg; }
+
 protected:
 
 	void Release() {}
@@ -78,6 +83,10 @@ protected:
 
 	// 存在消滅フラグ
 	bool m_isExpired = false;
+
+	// 当たり判定用のフラグ
+	bool m_collisionFlg = false;
+
 
 	// 3D空間に存在する機能
 	Math::Matrix	m_mWorld;

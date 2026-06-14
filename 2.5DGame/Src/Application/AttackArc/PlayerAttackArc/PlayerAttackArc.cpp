@@ -24,14 +24,13 @@ void PlayerAttackArc::Init()
 		"AttackArcCollision",
 		m_model,
 		KdCollider::Type::TypeDamage);
-
 	//=======================================
 
 }
 
 void PlayerAttackArc::DrawUnLit()
 {
-	KdShaderManager::Instance().m_StandardShader.DrawModel(*m_model, m_mWorld, kRedColor);
+	KdShaderManager::Instance().m_StandardShader.DrawModel(*m_model, m_mWorld, kBlueColor);
 }
 
 void PlayerAttackArc::Update()

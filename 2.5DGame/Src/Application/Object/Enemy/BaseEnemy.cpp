@@ -107,6 +107,7 @@ float BaseEnemy::PlayAttackAnim(float cntUp, int maxAnim)
 	{
 		m_animCnt = 0;
 
+		m_AtkCoolTimeFlg = true;
 
 		m_eNextEnemyState = EnemyState::IDLE;
 
@@ -114,23 +115,30 @@ float BaseEnemy::PlayAttackAnim(float cntUp, int maxAnim)
 		m_attackAnimFlg = false;
 
 		m_attackFlg = false;
+
+		m_shotFlg = true;
+		m_collisionFlg = false;
 	}
 
 	if (!m_attackAnimFlg)
 	{
 		m_animCnt += cntUp;
+
+		m_collisionFlg = false;
 	}
 	else
 	{
-		m_attackTime++;
+		m_attackTime++;	
 	}
 
 	if (m_attackAnimFlg && m_attackTime > 2)
 	{
 		m_attackAnimFlg = false;
+		m_collisionFlg = true;
 	}
 
-	if (m_attackTime == 0 && m_animCnt > 3)
+
+	if (m_attackTime == 0 && m_animCnt > 6)
 	{
 		m_attackAnimFlg = true;
 	}
@@ -164,18 +172,13 @@ void BaseEnemy::FlipEnemy(Math::Vector3 playerPos, Math::Vector3 enemyPos)
 
 void BaseEnemy::Attack(Math::Vector3 enemyPos, Math::Vector3 playerPos, float enemyRadius, float playerRadius)
 {
-	Math::Vector3 pos = playerPos - enemyPos;
+		Math::Vector3 pos = playerPos - enemyPos;
 
-	if (pos.Length() < enemyRadius + playerRadius)
-	{
-		m_attackFlg = true;
-		m_eNextEnemyState = EnemyState::ATTACK;
-
-		std::shared_ptr<ChargeEffect>chargeEffect = std::make_shared<ChargeEffect>();
-		chargeEffect->SetEnemyInst(std::dynamic_pointer_cast<BaseEnemy>(shared_from_this()));
-		SceneManager::Instance().AddObject(chargeEffect);
-	}
-
+		if (pos.Length() < enemyRadius + playerRadius)
+		{
+			m_attackFlg = true;
+			m_eNextEnemyState = EnemyState::ATTACK;
+		}
 }
 
 void BaseEnemy::ChangeEnemyState()
@@ -350,12 +353,22 @@ void BaseEnemy::AttackArcCollision(Math::Vector3& m_pos, float centerY, float ra
 					m_outroFlg = true;
 					m_eNextEnemyState = EnemyState::DEATH;
 				}
-
 			}
 		}
 	}
+}
 
-	
+void BaseEnemy::AttackCoolTime()
+{
+	if (m_AtkCoolTimeFlg)
+	{
+		m_AtkCoolTimeCnt++;
+		if (m_AtkCoolTimeCnt > 60 * 0.5)
+		{
+			m_AtkCoolTimeCnt = 0;
+			m_AtkCoolTimeFlg = false;
+		}
+	}
 }
 
 

@@ -6,7 +6,9 @@
 #include"../../UI/HPBar/HPBar.h"
 #include"../../Effects/SmokeEffect/SmokeEffect.h"
 
-void FlyingEye::Init()
+#include"../../Enemy/FlyngEye/EnergyBullet/EnergyBullet.h"
+
+void FlyngEye::Init()
 {
 	BaseEnemy::Init();
 
@@ -21,7 +23,7 @@ void FlyingEye::Init()
 
 	m_pos = { 5,0,5 };
 
-	m_radius = 1.5;
+	m_radius = 5;
 
 	m_eNowEnemyState = EnemyState::WALK;
 	m_eNextEnemyState = m_eNowEnemyState;
@@ -38,14 +40,11 @@ void FlyingEye::Init()
 
 	//=======================================
 
-
 	m_spHPBar = std::make_shared<HPBar>();
-
-
 
 }
 
-void FlyingEye::Update()
+void FlyngEye::Update()
 {
 	
 	if (m_outroFlg)
@@ -65,16 +64,31 @@ void FlyingEye::Update()
 
 	if(!m_hitFlg)
 	{
-		if (!m_attackFlg)
+		if (!m_attackFlg&&!m_AtkCoolTimeFlg)
 		{
 			Move(m_playerPos, m_pos, m_speed);
 
-			FlipEnemy(m_playerPos, m_pos);
+			
 			Attack(m_pos, m_playerPos, m_radius, m_playerRadius);
 		}
-
-		
+		else
+		{
+			if(m_shotFlg)
+			{
+				std::shared_ptr<EnergyBullet>energyBullet = std::make_shared<EnergyBullet>();
+				energyBullet->SetPos(m_pos);
+				energyBullet->SetEnemyPos(m_pos);
+				energyBullet->SetPlayerPos(m_playerPos);
+				energyBullet->SetEnemyInst(std::dynamic_pointer_cast<FlyngEye>(shared_from_this()));
+				SceneManager::Instance().AddObject(energyBullet);
+				m_shotFlg = false;
+				m_collisionFlg = true;
+			}
+		}
+		FlipEnemy(m_playerPos, m_pos);
 	}
+
+	AttackCoolTime();
 
 	UpdateEnemyState();
 
@@ -96,7 +110,7 @@ void FlyingEye::Update()
 	}*/
 }
 
-void FlyingEye::PostUpdate()
+void FlyngEye::PostUpdate()
 {
 	
 	RayCollision(m_pos, m_gravity, 0, 0.2, KdCollider::TypeGround);
@@ -116,14 +130,14 @@ void FlyingEye::PostUpdate()
 	m_spHPBar->Update(m_hp, maxHP);
 }
 
-void FlyingEye::DrawSprite()
+void FlyngEye::DrawSprite()
 {
 	Math::Vector3 hpPos = m_mWorld.Translation();
 	m_pCamera->ConvertWorldToScreenDetail(GetPos(), hpPos);
 	m_spHPBar->Draw(hpPos, false);
 }
 
-void FlyingEye::OutroUpdate()
+void FlyngEye::OutroUpdate()
 {
 	ChangeEnemyState();
 	m_polygon->SetUVRect(m_death[(int)m_outroAnimCnt]);
@@ -142,12 +156,12 @@ void FlyingEye::OutroUpdate()
 	}
 }
 
-void FlyingEye::OnHit()
+void FlyngEye::OnHit()
 {
 
 }
 
-void FlyingEye::UpdateEnemyState()
+void FlyngEye::UpdateEnemyState()
 {
 
 	ChangeEnemyState();
@@ -168,7 +182,7 @@ void FlyingEye::UpdateEnemyState()
 
 }
 
-void FlyingEye::Release()
+void FlyngEye::Release()
 {
 	
 }

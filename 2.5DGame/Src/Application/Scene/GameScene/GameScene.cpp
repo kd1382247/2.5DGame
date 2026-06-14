@@ -5,16 +5,15 @@
 
 #include"../../main.h"
 
-#include"../../Object/Enemy/MoveArc/MoveArc.h"
-
 #include"../../AttackArc/PlayerAttackArc/PlayerAttackArc.h"
-#include"../../AttackArc/SkeletonAttackArc/SkeletonAttackArc.h"
 
 #include"../../Object/Ground/Ground.h"
 #include"../../Object/Wall/Wall.h"
 #include"../../Object/Tree/Tree.h"
 
 #include"../../Object/Player/Player.h"
+
+#include"../../Object/UI/KeyGuide/KeyGuide.h"
 
 #include"../../Object/Enemy/Mushroom/Mushroom.h"
 #include"../../Object/Enemy/Goblin/Goblin.h"
@@ -48,10 +47,10 @@ void GameScene::Event()
 
 
 	// カメラ更新
-	Math::Vector3 camPos = { 0,8,-8 };
+	Math::Vector3 camPos = { 0,8,-7 };
 	//Math::Vector3 camPos = { 0,2,-6 };
 
-	Math::Matrix  rotationMat = Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(40));
+	Math::Matrix  rotationMat = Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(45));
 	//Math::Matrix  rotationMat = Math::Matrix::CreateRotationX(DirectX::XMConvertToRadians(0));
 
 	Math::Matrix  transMat = Math::Matrix::CreateTranslation(camPos+playerPos);
@@ -115,11 +114,11 @@ void GameScene::Init()
 
 
 
-	std::shared_ptr<FlyingEye>flyingEye;
-	flyingEye = std::make_shared<FlyingEye>();
-	flyingEye->SetPlayerInst(player);
-	flyingEye->SetCameraInst(m_camera.get());
-	m_objList.push_back(flyingEye);
+	std::shared_ptr<FlyngEye>flyngEye;
+	flyngEye = std::make_shared<FlyngEye>();
+	flyngEye->SetPlayerInst(player);
+	flyngEye->SetCameraInst(m_camera.get());
+	m_objList.push_back(flyngEye);
 
 	std::shared_ptr<Skeleton>skeleton;
 	skeleton = std::make_shared<Skeleton>();
@@ -133,6 +132,10 @@ void GameScene::Init()
 	m_objList.push_back(tree);
 
 	m_wpPlayer = player;
+
+	std::shared_ptr<KeyGuide>keyGuide;
+	keyGuide = std::make_shared<KeyGuide>();
+	m_objList.push_back(keyGuide);
 }
 
 

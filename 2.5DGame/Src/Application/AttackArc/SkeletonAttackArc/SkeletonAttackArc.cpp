@@ -39,6 +39,16 @@ void SkeletonAttackArc::Update()
 		m_isExpired = true;
 		return;
 	}
+
+
+	if (m_wpSkeleton.lock()->GetCollisionFlg())
+	{
+		m_collisionFlg = true;
+	}
+	else
+	{
+		m_collisionFlg = false;
+	}
 }
 
 void SkeletonAttackArc::PostUpdate()

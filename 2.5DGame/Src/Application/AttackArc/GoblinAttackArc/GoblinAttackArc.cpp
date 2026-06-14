@@ -42,12 +42,24 @@ void GoblinAttackArc::Update()
 		return;
 	}
 
+	if (m_wpGoblin.lock()->GetCollisionFlg())
+	{
+		m_collisionFlg = true;
+	}
+	else
+	{
+		m_collisionFlg = false;
+	}
+
 	Math::Vector3 goblinPos = {};
 
 	if (m_wpGoblin.expired() == false)
 	{
 		goblinPos = m_wpGoblin.lock()->GetPos();
 	}
+
+
+
 
 	m_angle = atan2(goblinPos.x - m_playerPos.x, goblinPos.z - m_playerPos.z);
 

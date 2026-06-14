@@ -142,6 +142,12 @@
     <Filter Include="Src\Application\AttackArc\GoblinAttackArc">
       <UniqueIdentifier>{d69d2a41-2921-4e1c-8b89-1a4bd342ca31}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\Object\Enemy\FlyngEye\EnergyBullet">
+      <UniqueIdentifier>{a204408b-49ef-4579-b3d2-9377eb74dbb2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Src\Application\Object\UI\KeyGuide">
+      <UniqueIdentifier>{73154ec3-a4b3-49f2-b226-f9bb793b4af3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -372,6 +378,12 @@
     <ClInclude Include="Src\Application\AttackArc\GoblinAttackArc\GoblinAttackArc.h">
       <Filter>Src\Application\AttackArc\GoblinAttackArc</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\Object\Enemy\FlyngEye\EnergyBullet\EnergyBullet.h">
+      <Filter>Src\Application\Object\Enemy\FlyngEye\EnergyBullet</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Application\Object\UI\KeyGuide\KeyGuide.h">
+      <Filter>Src\Application\Object\UI\KeyGuide</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -571,6 +583,12 @@
     </ClCompile>
     <ClCompile Include="Src\Application\AttackArc\GoblinAttackArc\GoblinAttackArc.cpp">
       <Filter>Src\Application\AttackArc\GoblinAttackArc</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Object\Enemy\FlyngEye\EnergyBullet\EnergyBullet.cpp">
+      <Filter>Src\Application\Object\Enemy\FlyngEye\EnergyBullet</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\Object\UI\KeyGuide\KeyGuide.cpp">
+      <Filter>Src\Application\Object\UI\KeyGuide</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

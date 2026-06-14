@@ -2,12 +2,12 @@
 #include"../../Enemy/BaseEnemy.h"
 
 
-class FlyingEye :public BaseEnemy
+class FlyngEye :public BaseEnemy
 {
 public:
 
-	FlyingEye() { Init(); }
-	~FlyingEye()override { Release(); }
+	FlyngEye() { Init(); }
+	~FlyngEye()override { Release(); }
 
 	void Init()      override;
 	void Update()    override;
@@ -17,13 +17,13 @@ public:
 
 	void OutroUpdate();
 
-	void OnHit();
+	void OnHit()override;
+
 
 private:
 
 	void Release();
 	void UpdateEnemyState();
-
 
 	// アニメーション変数
 	int m_walk[8] = { 0,1,2,3,4,5,6,7 };

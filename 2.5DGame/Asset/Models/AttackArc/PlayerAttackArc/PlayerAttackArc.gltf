@@ -106,29 +106,29 @@
 		{
 			"bufferView":4,
 			"componentType":5126,
-			"count":806,
+			"count":810,
 			"max":[
 				1.0220580101013184,
 				0.7099093198776245,
-				1.748549461364746
+				1.0550915002822876
 			],
 			"min":[
 				-1.0220578908920288,
 				-0.15255767107009888,
-				0.16145217418670654
+				0.26154282689094543
 			],
 			"type":"VEC3"
 		},
 		{
 			"bufferView":5,
 			"componentType":5126,
-			"count":806,
+			"count":810,
 			"type":"VEC3"
 		},
 		{
 			"bufferView":6,
 			"componentType":5126,
-			"count":806,
+			"count":810,
 			"type":"VEC2"
 		},
 		{
@@ -165,32 +165,32 @@
 		},
 		{
 			"buffer":0,
-			"byteLength":9672,
+			"byteLength":9720,
 			"byteOffset":140,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":9672,
-			"byteOffset":9812,
+			"byteLength":9720,
+			"byteOffset":9860,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":6448,
-			"byteOffset":19484,
+			"byteLength":6480,
+			"byteOffset":19580,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":2340,
-			"byteOffset":25932,
+			"byteOffset":26060,
 			"target":34963
 		}
 	],
 	"buffers":[
 		{
-			"byteLength":28272,
+			"byteLength":28400,
 			"uri":"PlayerAttackArc.bin"
 		}
 	]

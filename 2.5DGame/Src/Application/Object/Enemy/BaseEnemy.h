@@ -101,6 +101,12 @@ protected:
 	// 攻撃フラグ
 	bool          m_attackFlg = {};
 
+	bool          m_shotFlg = {};
+
+	bool          m_AtkCoolTimeFlg = {};
+	float         m_AtkCoolTimeCnt = {};
+
+
 	// アウトロフラグ
 	bool          m_outroFlg = {};
 	const int     maxOutroAnim = 12;
@@ -151,5 +157,8 @@ protected:
 
 	// プレイヤーの攻撃範囲入っているか
 	void AttackArcCollision(Math::Vector3& m_pos, float centerY, float radius, KdCollider::Type type, Math::Color color = kWhiteColor);
+	// 攻撃のクールタイム
+	void AttackCoolTime();
+
 
 };
