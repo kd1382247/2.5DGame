@@ -326,21 +326,25 @@ void BaseEnemy::AttackArcCollision(Math::Vector3& m_pos, float centerY, float ra
 	// 球の半径を設定
 	sphere.m_sphere.Radius = radius;
 	// 当たり判定をしたいタイプを設定
-	sphere.m_type = type;
+	sphere.m_type = KdCollider::TypeDamage;
 
 	// デバッグ
 	//m_pDebugWire->AddDebugSphere(sphere.m_sphere.Center, sphere.m_sphere.Radius,color);
 
 	// 全部ジェクトと当たり判定をする!
-	for (auto& obj : SceneManager::Instance().GetObjList())
-	{
+
+
 		// 全オブジェクトに対してレイ判定する関数を呼び出す
+
+	std::shared_ptr<KdGameObject>obj = m_wpPlayer.lock();
+	if(obj)
+	{
 		if (obj->Intersects(sphere, nullptr) == true)
 		{
-			
+
 			bool damageFlg = false;
 
-			if(m_wpPlayer.expired()==false)
+			if (m_wpPlayer.expired() == false)
 			{
 				damageFlg = m_wpPlayer.lock()->GetDamageFlg();
 			}
@@ -361,6 +365,7 @@ void BaseEnemy::AttackArcCollision(Math::Vector3& m_pos, float centerY, float ra
 			}
 		}
 	}
+
 }
 
 void BaseEnemy::AttackCoolTime()

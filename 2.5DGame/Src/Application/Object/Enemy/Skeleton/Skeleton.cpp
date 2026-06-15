@@ -71,17 +71,7 @@ void Skeleton::Update()
 		}
 		else
 		{
-			if (m_skeletonAtkArc == nullptr)
-			{
-				m_skeletonAtkArc = std::make_shared<SkeletonAttackArc>();
-				m_skeletonAtkArc->SetSkeletonInst(std::dynamic_pointer_cast<Skeleton>(shared_from_this()));
-				m_skeletonAtkArc->SetPos(m_pos + Math::Vector3(0, 0.1, 0));
-				SceneManager::Instance().AddObject(m_skeletonAtkArc);
-			}
-			else
-			{
-				m_skeletonAtkArc->SetPos(m_pos + Math::Vector3(0, 0.1, 0));
-			}
+			
 		}
 
 	}

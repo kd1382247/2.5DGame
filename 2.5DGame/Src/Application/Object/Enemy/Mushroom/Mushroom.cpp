@@ -79,7 +79,6 @@ void Mushroom::Update()
 				m_mushroomAtkArc->SetMushroomInst(std::dynamic_pointer_cast<Mushroom>(shared_from_this()));
 				m_mushroomAtkArc->SetPos(m_pos + Math::Vector3(0, 0.1, 0));
 				m_mushroomAtkArc->SetPlayerPos(m_playerPos);
-				m_attackArcAliveFlg = true;
 				m_targetPos = m_playerPos;
 				m_nowPos = m_pos;
 				

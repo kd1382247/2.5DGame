@@ -16,6 +16,17 @@ void MoveArc::Init()
 	m_transMat = Math::Matrix::Identity;
 	m_rotationMat = Math::Matrix::Identity;
 	m_mWorld = Math::Matrix::Identity;
+
+	// 当たり判定を付けたいから実体化
+	m_pCollider = std::make_unique<KdCollider>();
+
+	// モデルの形状で当たり判定を登録
+	m_pCollider->RegisterCollisionShape(
+		"AttackArcCollision",
+		m_mode,
+		KdCollider::Type::TypeDamage);
+	//=======================================
+
 }
 
 void MoveArc::Update()

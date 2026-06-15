@@ -115,6 +115,12 @@ void GameScene::Init()
 		goblin->SetPlayerInst(player);
 		goblin->SetCameraInst(m_camera.get());
 		m_objList.push_back(goblin);
+
+		std::shared_ptr<MoveArc>moveArc;
+		moveArc = std::make_shared<MoveArc>();
+		moveArc->SetEnemyInst(goblin);
+		moveArc->SetPlayerInst(player);
+		m_objList.push_back(moveArc);
 	}
 	
 

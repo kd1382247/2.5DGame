@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include"../../Enemy/BaseEnemy.h"
 
-class GoblinAttackArc;
 
 class Goblin :public BaseEnemy
 {
@@ -15,8 +14,6 @@ public:
 	void Update()    override;
 	void PostUpdate()override;
 	void DrawSprite()override;
-
-	std::shared_ptr<GoblinAttackArc>& GetGoblin() { return m_goblinAtkArc; }
 
 	void SetCollisionFlg(bool flg)override { m_collisionFlg = flg; }
 	bool GetCollisionFlg()override { return m_collisionFlg; }
@@ -36,6 +33,5 @@ private:
 	int m_death[13] = { 16,17,18,19 ,24,24,25,25,26,26,27,27,27 };
 	int m_attack[8] = { 32,33,34,35,36,37,38,39 };
 
-	std::shared_ptr<GoblinAttackArc>m_goblinAtkArc=nullptr;
 
 };

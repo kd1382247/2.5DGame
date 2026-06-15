@@ -65,22 +65,10 @@ void Goblin::Update()
 
 			Attack(m_pos, m_playerPos, m_radius, m_playerRadius);
 
-			m_goblinAtkArc = nullptr;
 		}
 		else
 		{
-			if (m_goblinAtkArc == nullptr)
-			{
-				m_goblinAtkArc = std::make_shared<GoblinAttackArc>();
-				m_goblinAtkArc->SetGoblinInst(std::dynamic_pointer_cast<Goblin>(shared_from_this()));
-				m_goblinAtkArc->SetPos(m_pos + Math::Vector3(0, 0.1, 0));
-				m_goblinAtkArc->SetPlayerPos(m_playerPos);
-				SceneManager::Instance().AddObject(m_goblinAtkArc);
-			}
-			else
-			{
-				m_goblinAtkArc->SetPos(m_pos + Math::Vector3(0, 0.1, 0));
-			}
+			
 		}
 
 	}
