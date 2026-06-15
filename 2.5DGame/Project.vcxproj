@@ -274,6 +274,7 @@
     <ClInclude Include="..\Library\tinygltf\stb_image_write.h" />
     <ClInclude Include="..\Library\tinygltf\tiny_gltf.h" />
     <ClInclude Include="Src\Application\AttackArc\GoblinAttackArc\GoblinAttackArc.h" />
+    <ClInclude Include="Src\Application\AttackArc\MushroomAttackArc\MushroomAttackArc.h" />
     <ClInclude Include="Src\Application\AttackArc\PlayerAttackArc\PlayerAttackArc.h" />
     <ClInclude Include="Src\Application\AttackArc\SkeletonAttackArc\SkeletonAttackArc.h" />
     <ClInclude Include="Src\Application\main.h" />
@@ -347,6 +348,7 @@
     <ClCompile Include="..\Library\imgui\imgui_tables.cpp" />
     <ClCompile Include="..\Library\imgui\imgui_widgets.cpp" />
     <ClCompile Include="Src\Application\AttackArc\GoblinAttackArc\GoblinAttackArc.cpp" />
+    <ClCompile Include="Src\Application\AttackArc\MushroomAttackArc\MushroomAttackArc.cpp" />
     <ClCompile Include="Src\Application\AttackArc\PlayerAttackArc\PlayerAttackArc.cpp" />
     <ClCompile Include="Src\Application\AttackArc\SkeletonAttackArc\SkeletonAttackArc.cpp" />
     <ClCompile Include="Src\Application\main.cpp" />

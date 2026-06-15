@@ -19,7 +19,7 @@ void Skeleton::Init()
 
 	m_polygon->SetScale(4);
 
-	m_pos = { 5,0,0 };
+	m_pos = {};
 
 	m_radius = 0.5f;
 

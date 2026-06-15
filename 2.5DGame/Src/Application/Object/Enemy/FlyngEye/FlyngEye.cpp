@@ -66,7 +66,7 @@ void FlyngEye::Update()
 	{
 		if (!m_attackFlg&&!m_AtkCoolTimeFlg)
 		{
-			Move(m_playerPos, m_pos, m_speed);
+			//Move(m_playerPos, m_pos, m_speed);
 
 			
 			Attack(m_pos, m_playerPos, m_radius, m_playerRadius);

@@ -30,6 +30,9 @@ public:
 
 	bool  GetDamageFlg() { return m_damageFlg; }
 
+	void SetPos(Math::Vector3 pos) { m_pos = pos; }
+	Math::Vector3 GetPos() { return m_pos; }
+
 private:
 
 	enum class PlayerState

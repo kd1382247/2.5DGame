@@ -148,6 +148,9 @@
     <Filter Include="Src\Application\Object\UI\KeyGuide">
       <UniqueIdentifier>{73154ec3-a4b3-49f2-b226-f9bb793b4af3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Src\Application\AttackArc\MushroomAttackArc">
+      <UniqueIdentifier>{87d139ec-9a89-47b0-a6c9-351dff159548}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Pch.h">
@@ -384,6 +387,9 @@
     <ClInclude Include="Src\Application\Object\UI\KeyGuide\KeyGuide.h">
       <Filter>Src\Application\Object\UI\KeyGuide</Filter>
     </ClInclude>
+    <ClInclude Include="Src\Application\AttackArc\MushroomAttackArc\MushroomAttackArc.h">
+      <Filter>Src\Application\AttackArc\MushroomAttackArc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Pch.cpp">
@@ -589,6 +595,9 @@
     </ClCompile>
     <ClCompile Include="Src\Application\Object\UI\KeyGuide\KeyGuide.cpp">
       <Filter>Src\Application\Object\UI\KeyGuide</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Application\AttackArc\MushroomAttackArc\MushroomAttackArc.cpp">
+      <Filter>Src\Application\AttackArc\MushroomAttackArc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

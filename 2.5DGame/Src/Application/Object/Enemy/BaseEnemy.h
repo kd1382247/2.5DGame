@@ -37,6 +37,8 @@ public:
 
 	Math::Vector3 GetPlayerPos() { return m_playerPos; }
 
+	void SetPos(Math::Vector3 pos) { m_pos = pos; }
+
 private:
 
 	void Release();
@@ -120,6 +122,8 @@ protected:
 
 	float m_outroAnimCnt = {};
 
+	float m_moveFlg = {};
+
 	// スケール
 	float m_scale = {};
 
@@ -134,6 +138,8 @@ protected:
 	//                 関数
 	///////////////////////////////////////////////
 	
+
+
 	// アニメーション関数
 	float PlayAnim(float cntUp, int maxAnim);
 

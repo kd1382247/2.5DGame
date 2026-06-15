@@ -31,7 +31,7 @@ void GoblinAttackArc::Init()
 
 void GoblinAttackArc::DrawUnLit()
 {
-	KdShaderManager::Instance().m_StandardShader.DrawModel(*m_model, m_mWorld, kRedColor);
+	//KdShaderManager::Instance().m_StandardShader.DrawModel(*m_model, m_mWorld);
 }
 
 void GoblinAttackArc::Update()

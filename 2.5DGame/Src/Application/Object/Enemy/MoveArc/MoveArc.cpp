@@ -6,9 +6,9 @@
 void MoveArc::Init()
 {
 	m_mode = std::make_shared<KdModelData>();
-	m_mode->Load("Asset/Models/Cursor/Cursor.gltf");
+	m_mode->Load("Asset/Models/AttackArc/PlayerAttackArc/PlayerAttackArc.gltf");
 
-	m_pos = {0,0,-0.2};
+	m_pos = {0,0.5,-0.2};
 	m_angle={};
 
 	m_attackFlg = {};
@@ -78,5 +78,5 @@ void MoveArc::PostUpdate()
 
 void MoveArc::DrawUnLit()
 {
-	//KdShaderManager::Instance().m_StandardShader.DrawModel(*m_mode, m_mWorld,kRedColor);
+	KdShaderManager::Instance().m_StandardShader.DrawModel(*m_mode, m_mWorld,kRedColor);
 }

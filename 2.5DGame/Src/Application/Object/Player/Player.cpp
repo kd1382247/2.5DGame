@@ -482,8 +482,6 @@ void Player::ChangePlayerState()
 
 		m_animCnt = 0;
 		m_eNowPlayerState = m_eNextPlayerState;
-
-		
 	}
 }
 

@@ -49,6 +49,10 @@ void BaseEnemy::Init()
 	
 	m_spHPBar = nullptr;
 
+	m_AtkCoolTimeCnt = 0;
+	m_AtkCoolTimeFlg = false;
+
+
 	m_hp = maxHP;
 
 }
@@ -135,6 +139,7 @@ float BaseEnemy::PlayAttackAnim(float cntUp, int maxAnim)
 	{
 		m_attackAnimFlg = false;
 		m_collisionFlg = true;
+		m_moveFlg = true;
 	}
 
 

@@ -6,6 +6,7 @@
 #include"../../main.h"
 
 #include"../../AttackArc/PlayerAttackArc/PlayerAttackArc.h"
+#include"../../Object/Enemy/MoveArc/MoveArc.h"
 
 #include"../../Object/Ground/Ground.h"
 #include"../../Object/Wall/Wall.h"
@@ -72,7 +73,7 @@ void GameScene::Event()
 void GameScene::Init()
 {
 	// ●カメラ実体化
-	
+
 	//ユニークポインタは領域を指すことができるポインタを自分だけにする
 	//                     ↓ユニークポインタで管理されている
 	m_camera = std::make_unique <KdCamera>();
@@ -85,16 +86,18 @@ void GameScene::Init()
 	std::shared_ptr<Wall>wall;
 	wall = std::make_shared<Wall>();
 	m_objList.push_back(wall);
-	
+
+
 	std::shared_ptr<Player>player;
 	player = std::make_shared<Player>();
 	player->SetCameraInst(m_camera.get());
+	player->SetPos({ 0, 0, -8 });
 	m_objList.push_back(player);
+
 
 	std::shared_ptr<PlayerAttackArc> playerAtkArc = std::make_shared<PlayerAttackArc>();
 	playerAtkArc->SetPlayerInst(player);
 	m_objList.push_back(playerAtkArc);
-
 
 
 	std::shared_ptr<Mushroom>mushroom;
@@ -104,14 +107,16 @@ void GameScene::Init()
 	m_objList.push_back(mushroom);
 
 
-
-
-	std::shared_ptr<Goblin>goblin;
-	goblin = std::make_shared<Goblin>();
-	goblin->SetPlayerInst(player);
-	goblin->SetCameraInst(m_camera.get());
-	m_objList.push_back(goblin);
-
+	for(int i=0;i<5;i++)
+	{
+		std::shared_ptr<Goblin>goblin;
+		goblin = std::make_shared<Goblin>();
+		goblin->SetPos({ (float)0.5*i,0,0 });
+		goblin->SetPlayerInst(player);
+		goblin->SetCameraInst(m_camera.get());
+		m_objList.push_back(goblin);
+	}
+	
 
 
 	std::shared_ptr<FlyngEye>flyngEye;
@@ -120,12 +125,24 @@ void GameScene::Init()
 	flyngEye->SetCameraInst(m_camera.get());
 	m_objList.push_back(flyngEye);
 
-	std::shared_ptr<Skeleton>skeleton;
-	skeleton = std::make_shared<Skeleton>();
-	skeleton->SetPlayerInst(player);
-	skeleton->SetCameraInst(m_camera.get());
-	m_objList.push_back(skeleton);
+	for(int i=0;i<3;i++)
+	{
+		std::shared_ptr<Skeleton>skeleton;
+		skeleton = std::make_shared<Skeleton>();
+		skeleton->SetPlayerInst(player);
+		skeleton->SetCameraInst(m_camera.get());
+		skeleton->SetPos(Math::Vector3(-3, 0, (float)0.5*i));
+		m_objList.push_back(skeleton);
 
+		std::shared_ptr<MoveArc>moveArc;
+		moveArc = std::make_shared<MoveArc>();
+		moveArc->SetEnemyInst(skeleton);
+		moveArc->SetPlayerInst(player);
+		m_objList.push_back(moveArc);
+
+	}
+
+	
 
 	std::shared_ptr<Tree>tree;
 	tree = std::make_shared<Tree>();

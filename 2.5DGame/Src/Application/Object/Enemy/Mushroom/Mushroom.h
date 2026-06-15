@@ -1,6 +1,8 @@
 ﻿#pragma once
 #include"../../Enemy/BaseEnemy.h"
 
+class MushroomAttackArc;
+
 class Mushroom:public BaseEnemy
 {
 public:
@@ -14,6 +16,10 @@ public:
 	void PostUpdate()override;
 
 	void DrawSprite()override;
+
+	bool GetMoveFlg() { return m_moveFlg; }
+
+	bool GetAttackAliveFlg() { return m_attackArcAliveFlg; }
 
 private:
 
@@ -31,5 +37,13 @@ private:
 	int m_death[13] = { 16,17,18,19,24,24,25,25,26,26,27,27,27 };
 	int m_attack[8] = { 32,33,34,35,36,37,38,39 };
 
+	std::shared_ptr<MushroomAttackArc>m_mushroomAtkArc=nullptr;
+
+	Math::Vector3 m_targetPos = {};
+	Math::Vector3 m_nowPos = {};
+
+	float m_moveCnt = {};
+
+	bool  m_attackArcAliveFlg = {};
 
 };

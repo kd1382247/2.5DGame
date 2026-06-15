@@ -4,6 +4,7 @@
 #include"../../Player/Player.h"
 #include"../../UI/HPBar/HPBar.h"
 #include"../../Effects/SmokeEffect/SmokeEffect.h"
+#include"../../../AttackArc/MushroomAttackArc/MushroomAttackArc.h"
 
 
 void Mushroom::Init()
@@ -60,14 +61,54 @@ void Mushroom::Update()
 
 	if (!m_hitFlg)
 	{
-		if (!m_attackFlg && !m_AtkCoolTimeFlg)
+		if (!m_attackFlg && !m_AtkCoolTimeFlg&&!m_moveFlg)
 		{
 			Move(m_playerPos, m_pos, m_speed);
 
 			FlipEnemy(m_playerPos, m_pos);
 			Attack(m_pos, m_playerPos, m_radius, m_playerRadius);
-		}
 
+			m_mushroomAtkArc = nullptr;
+		}
+		else
+		{
+
+			if (m_mushroomAtkArc == nullptr)
+			{
+				m_mushroomAtkArc = std::make_shared<MushroomAttackArc>();
+				m_mushroomAtkArc->SetMushroomInst(std::dynamic_pointer_cast<Mushroom>(shared_from_this()));
+				m_mushroomAtkArc->SetPos(m_pos + Math::Vector3(0, 0.1, 0));
+				m_mushroomAtkArc->SetPlayerPos(m_playerPos);
+				m_attackArcAliveFlg = true;
+				m_targetPos = m_playerPos;
+				m_nowPos = m_pos;
+				
+				SceneManager::Instance().AddObject(m_mushroomAtkArc);
+			}
+			else
+			{
+				
+				if(m_moveFlg)
+				{
+					Math::Vector3 dir = m_targetPos - m_nowPos;
+
+					dir.Normalize();
+
+					m_pos += dir * 0.1;
+
+					m_moveCnt++;
+					if (m_moveCnt > 60 * 0.25)
+					{
+						m_moveFlg = false;
+						m_attackArcAliveFlg = false;
+						m_moveCnt = 0;
+					}
+				}
+
+				m_mushroomAtkArc->SetPos(m_pos + Math::Vector3(0, 0.1, 0));
+
+			}
+		}
 	
 	}
 

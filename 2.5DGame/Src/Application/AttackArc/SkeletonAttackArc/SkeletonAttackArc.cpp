@@ -53,5 +53,5 @@ void SkeletonAttackArc::Update()
 
 void SkeletonAttackArc::PostUpdate()
 {
-	m_mWorld = Math::Matrix::CreateTranslation(m_pos);
+	//m_mWorld = Math::Matrix::CreateTranslation(m_pos);
 }
